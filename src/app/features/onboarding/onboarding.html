@@ -1,0 +1,217 @@
+<div class="onboarding-modal-container">
+  <!-- Title Header with Close Button -->
+  <div class="onboarding-header">
+    <h2 class="welcome-text mb-0">Welcome to Debt Manager</h2>
+    <button type="button" class="close-btn" (click)="close()" aria-label="Close dialog">
+      <i class="pi pi-times"></i>
+    </button>
+  </div>
+
+  <div class="onboarding-content">
+    <!-- Horizontal Step Progress Indicators -->
+    <div class="step-progress-wrapper mb-3">
+      <div class="progress-segment" [class.active]="currentStep >= 1"></div>
+      <div class="progress-segment" [class.active]="currentStep >= 2"></div>
+      <div class="progress-segment" [class.active]="currentStep >= 3"></div>
+    </div>
+
+    <!-- Step Subtitle Text -->
+    <div class="step-label text-center mb-4">
+      <span *ngIf="currentStep === 1">Step 1 of 3: Profile Details</span>
+      <span *ngIf="currentStep === 2">Step 2 of 3: Income Sources</span>
+      <span *ngIf="currentStep === 3">Step 3 of 3: Current Debts</span>
+    </div>
+
+    <!-- Step Instructional Header -->
+    <p class="step-instruction mb-4">
+      <span *ngIf="currentStep === 1">Let's start with some basic details.</span>
+      <span *ngIf="currentStep === 2">Add your income sources to help us calculate your surplus.</span>
+      <span *ngIf="currentStep === 3">Finally, add any existing debts you want to track.</span>
+    </p>
+
+    <!-- STEP 1: Profile Details Form -->
+    <div *ngIf="currentStep === 1" class="step-container">
+      <form [formGroup]="profileForm">
+        <div class="form-group mb-3">
+          <label class="form-label" for="fullName">Full Name</label>
+          <input 
+            id="fullName"
+            type="text" 
+            pInputText 
+            formControlName="fullName" 
+            class="w-100 onboarding-input" 
+            placeholder="e.g. Aarav Kumar" />
+        </div>
+
+        <div class="form-group mb-3">
+          <label class="form-label" for="email">Email</label>
+          <input 
+            id="email"
+            type="email" 
+            pInputText 
+            formControlName="email" 
+            class="w-100 onboarding-input" 
+            placeholder="test@gmail.com" />
+        </div>
+
+        <div class="form-group mb-4">
+          <label class="form-label" for="mobile">Mobile Number</label>
+          <input 
+            id="mobile"
+            type="text" 
+            pInputText 
+            formControlName="mobile" 
+            class="w-100 onboarding-input" 
+            placeholder="+91 98765 43210" />
+        </div>
+
+        <!-- Footer Actions for Step 1 -->
+        <div class="d-flex justify-content-end align-items-center pt-3">
+          <button 
+            type="button" 
+            class="nav-btn next-btn" 
+            (click)="nextStep()" 
+            [disabled]="profileForm.invalid">
+            Next Step
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- STEP 2: Income Sources Form -->
+    <div *ngIf="currentStep === 2" class="step-container">
+      <!-- Income Cards List -->
+      <div class="cards-list mb-4">
+        <div class="form-card p-3 mb-3 position-relative" *ngFor="let income of incomeList; let i = index">
+          <!-- Card Header Action (Delete) -->
+          <button 
+            type="button" 
+            class="delete-card-btn" 
+            (click)="removeIncomeSource(i)" 
+            *ngIf="incomeList.length > 1"
+            title="Delete this source">
+            <i class="pi pi-trash"></i>
+          </button>
+
+          <div class="row g-3">
+            <div class="col-12 col-md-12">
+              <label class="form-label">Source Name</label>
+              <input 
+                type="text" 
+                pInputText 
+                [(ngModel)]="income.sourceName" 
+                class="w-100 onboarding-input" 
+                placeholder="e.g. salary" />
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label">Amount (₹)</label>
+              <input 
+                type="number" 
+                pInputText 
+                [(ngModel)]="income.amount" 
+                class="w-100 onboarding-input" 
+                placeholder="e.g. 90000" />
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label">Frequency</label>
+              <p-select 
+                [options]="frequencies" 
+                [(ngModel)]="income.frequency" 
+                optionLabel="label" 
+                optionValue="value" 
+                placeholder="Select Frequency"
+                class="w-100 custom-p-dropdown">
+              </p-select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashed Add Button -->
+      <button type="button" class="dashed-add-btn w-100 py-3 mb-4" (click)="addIncomeSource()">
+        <i class="pi pi-plus me-1"></i> Add Income Source
+      </button>
+
+      <!-- Footer Actions for Step 2 -->
+      <div class="d-flex justify-content-between align-items-center pt-3 border-top" style="border-color: #f1f5f9 !important;">
+        <button type="button" class="back-link-btn" (click)="prevStep()">Back</button>
+        <button type="button" class="nav-btn next-btn" (click)="nextStep()">Next Step</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Current Debts Form -->
+    <div *ngIf="currentStep === 3" class="step-container">
+      <!-- Debts Cards List -->
+      <div class="cards-list mb-4">
+        <div class="form-card p-3 mb-3 position-relative" *ngFor="let debt of debtsList; let i = index">
+          <!-- Card Header Action (Delete) -->
+          <button 
+            type="button" 
+            class="delete-card-btn" 
+            (click)="removeDebt(i)" 
+            *ngIf="debtsList.length > 1"
+            title="Delete this debt">
+            <i class="pi pi-trash"></i>
+          </button>
+
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label">Debt Name</label>
+              <input 
+                type="text" 
+                pInputText 
+                [(ngModel)]="debt.name" 
+                class="w-100 onboarding-input" 
+                placeholder="e.g. Car Loan" />
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label">Type</label>
+              <p-select 
+                [options]="debtTypes" 
+                [(ngModel)]="debt.type" 
+                optionLabel="label" 
+                optionValue="value" 
+                placeholder="Select Type"
+                class="w-100 custom-p-dropdown">
+              </p-select>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label">Current Balance (₹)</label>
+              <input 
+                type="number" 
+                pInputText 
+                [(ngModel)]="debt.currentBalance" 
+                class="w-100 onboarding-input" 
+                placeholder="e.g. 500000" />
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label">EMI (₹)</label>
+              <input 
+                type="number" 
+                pInputText 
+                [(ngModel)]="debt.emi" 
+                class="w-100 onboarding-input" 
+                placeholder="e.g. 15000" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashed Add Button -->
+      <button type="button" class="dashed-add-btn w-100 py-3 mb-4" (click)="addDebt()">
+        <i class="pi pi-plus me-1"></i> Add Debt
+      </button>
+
+      <!-- Footer Actions for Step 3 -->
+      <div class="d-flex justify-content-between align-items-center pt-3 border-top" style="border-color: #f1f5f9 !important;">
+        <button type="button" class="back-link-btn" (click)="prevStep()">Back</button>
+        <button type="button" class="nav-btn complete-btn" (click)="completeSetup()">Complete Setup</button>
+      </div>
+    </div>
+  </div>
+</div>

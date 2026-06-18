@@ -1,0 +1,465 @@
+<div class="container-fluid py-2">
+  <!-- Header Section -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="greeting">
+      <h1 class="welcome-text mb-1">Good morning, {{user().name}} 👋</h1>
+      <p class="text-secondary subtitle mb-0">Here's your financial snapshot for May 2026.</p>
+    </div>
+    <div class="header-actions d-none d-md-flex">
+      <button mat-stroked-button class="action-btn-outline me-2" (click)="openAddExpense()">
+        <mat-icon>add</mat-icon> Add Expense
+      </button>
+      <button mat-raised-button color="primary" class="action-btn-filled" (click)="openRecordPayment()">
+        <mat-icon>receipt_long</mat-icon> Record Payment
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI Grid -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-md-4 col-xl-4">
+      <mat-card class="kpi-card h-100">
+        <div class="d-flex justify-content-between mb-3">
+          <div class="kpi-icon-box bg-red-soft">
+            <mat-icon class="text-danger">account_balance_wallet</mat-icon>
+          </div>
+          @if (kpis().totalDebt > 0) {
+            <span class="kpi-badge text-danger">-3.2%</span>
+          }
+        </div>
+        <div class="kpi-content">
+          <div class="kpi-label">Total Debt Outstanding</div>
+          @if (kpis().totalDebt > 0) {
+            <div class="kpi-value">₹{{kpis().totalDebt | number}}</div>
+          } @else {
+            <div class="kpi-no-data">
+              <div class="kpi-no-data-dash">—</div>
+              <div class="kpi-no-data-text">No debts recorded</div>
+            </div>
+          }
+        </div>
+      </mat-card>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-4 col-xl-4">
+      <mat-card class="kpi-card h-100">
+        <div class="d-flex justify-content-between mb-3">
+          <div class="kpi-icon-box bg-orange-soft">
+            <mat-icon class="text-warning">group</mat-icon>
+          </div>
+          @if (kpis().friendDebt > 0) {
+            <span class="kpi-badge text-danger">-12.5%</span>
+          }
+        </div>
+        <div class="kpi-content">
+          <div class="kpi-label">Friend Debt Remaining</div>
+          @if (kpis().friendDebt > 0) {
+            <div class="kpi-value">₹{{kpis().friendDebt | number}}</div>
+          } @else {
+            <div class="kpi-no-data">
+              <div class="kpi-no-data-dash">—</div>
+              <div class="kpi-no-data-text">No friend debts</div>
+            </div>
+          }
+        </div>
+      </mat-card>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-4 col-xl-4">
+      <mat-card class="kpi-card h-100">
+        <div class="d-flex justify-content-between mb-3">
+          <div class="kpi-icon-box bg-green-soft">
+            <mat-icon class="text-success">trending_up</mat-icon>
+          </div>
+          @if (kpis().monthlyIncome > 0) {
+            <span class="kpi-badge text-success">+4.0%</span>
+          }
+        </div>
+        <div class="kpi-content">
+          <div class="kpi-label">Monthly Income</div>
+          @if (kpis().monthlyIncome > 0) {
+            <div class="kpi-value">₹{{kpis().monthlyIncome | number}}</div>
+          } @else {
+            <div class="kpi-no-data">
+              <div class="kpi-no-data-dash">—</div>
+              <div class="kpi-no-data-text">No income sources added</div>
+            </div>
+          }
+        </div>
+      </mat-card>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-4 col-xl-4">
+      <mat-card class="kpi-card h-100">
+        <div class="d-flex justify-content-between mb-3">
+          <div class="kpi-icon-box bg-blue-soft">
+            <mat-icon class="text-primary">receipt</mat-icon>
+          </div>
+          @if (kpis().monthlyExpenses > 0) {
+            <span class="kpi-badge text-danger">-1.1%</span>
+          }
+        </div>
+        <div class="kpi-content">
+          <div class="kpi-label">Monthly Expenses</div>
+          @if (kpis().monthlyExpenses > 0) {
+            <div class="kpi-value">₹{{kpis().monthlyExpenses | number}}</div>
+          } @else {
+            <div class="kpi-no-data">
+              <div class="kpi-no-data-dash">—</div>
+              <div class="kpi-no-data-text">No expenses logged</div>
+            </div>
+          }
+        </div>
+      </mat-card>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-4 col-xl-4">
+      <mat-card class="kpi-card h-100">
+        <div class="d-flex justify-content-between mb-3">
+          <div class="kpi-icon-box bg-indigo-soft">
+            <mat-icon class="text-primary">event_repeat</mat-icon>
+          </div>
+          @if (kpis().monthlyEmis > 0) {
+            <span class="kpi-badge text-secondary">stable</span>
+          }
+        </div>
+        <div class="kpi-content">
+          <div class="kpi-label">Monthly EMIs</div>
+          @if (kpis().monthlyEmis > 0) {
+            <div class="kpi-value">₹{{kpis().monthlyEmis | number}}</div>
+          } @else {
+            <div class="kpi-no-data">
+              <div class="kpi-no-data-dash">—</div>
+              <div class="kpi-no-data-text">No active EMIs</div>
+            </div>
+          }
+        </div>
+      </mat-card>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-4 col-xl-4">
+      <mat-card class="kpi-card h-100">
+        <div class="d-flex justify-content-between mb-3">
+          <div class="kpi-icon-box bg-teal-soft">
+            <mat-icon class="text-success">savings</mat-icon>
+          </div>
+          @if (kpis().monthlyIncome > 0) {
+            <span class="kpi-badge text-success">+8.4%</span>
+          }
+        </div>
+        <div class="kpi-content">
+          <div class="kpi-label">Available Surplus</div>
+          @if (kpis().monthlyIncome > 0) {
+            <div class="kpi-value">₹{{kpis().availableSurplus | number}}</div>
+          } @else {
+            <div class="kpi-no-data">
+              <div class="kpi-no-data-dash">—</div>
+              <div class="kpi-no-data-text">Add income to calculate</div>
+            </div>
+          }
+        </div>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-lg-5">
+      <mat-card class="chart-card h-100">
+        <mat-card-header>
+          <mat-card-title>Debt Breakdown</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="d-flex flex-column flex-sm-row">
+          @if (debtService.debts().length > 0) {
+            <div class="donut-container mx-auto mx-sm-0">
+              <canvas baseChart [data]="donutChartData()" [options]="donutChartOptions" type="doughnut">
+              </canvas>
+            </div>
+            <div class="chart-legend flex-grow-1">
+              @for (label of donutChartData().labels; track label; let i = $index) {
+                <div class="legend-item d-flex justify-content-between">
+                  <div class="legend-label d-flex align-items-center">
+                    <span class="dot" [style.background-color]="getDonutColor(i)"></span>
+                    {{label}}
+                  </div>
+                  <div class="legend-value">₹{{getDonutValue(i) | number}}</div>
+                </div>
+              }
+            </div>
+          } @else {
+            <app-empty-state
+              class="w-100"
+              icon="pie_chart"
+              title="No Debt Data"
+              description="Add your first debt to see the breakdown by category.">
+            </app-empty-state>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-12 col-lg-7">
+      <mat-card class="chart-card h-100">
+        <mat-card-header class="d-flex justify-content-between align-items-center">
+          <mat-card-title>Debt Payoff Trend</mat-card-title>
+          <div class="chart-extra text-secondary"><mat-icon class="inline-icon">trending_down</mat-icon> ₹1.94L paid
+            down</div>
+        </mat-card-header>
+        <mat-card-content class="line-chart-container">
+          @if (debtService.debts().length > 0) {
+            <canvas baseChart [data]="lineChartData()" [options]="lineChartOptions" type="line">
+            </canvas>
+          } @else {
+            <app-empty-state
+              icon="trending_down"
+              title="No Trend Data"
+              description="Add debts to visualize your payoff progress over time.">
+            </app-empty-state>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Main Grid Section -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-xl-8">
+      <mat-card class="grid-card h-100">
+        <mat-card-header>
+          <mat-card-title>Income vs Expenses</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="bar-chart-container">
+          @if (kpis().monthlyIncome > 0 || kpis().monthlyExpenses > 0) {
+            <canvas baseChart [data]="barChartData()" [options]="barChartOptions" type="bar">
+            </canvas>
+          } @else {
+            <app-empty-state
+              icon="bar_chart"
+              title="No Financial Data"
+              description="Add income sources and expenses to compare your monthly cash flow.">
+            </app-empty-state>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-12 col-xl-4">
+      <mat-card class="grid-card h-100">
+        <mat-card-header>
+          <mat-card-title>Upcoming Due Dates</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (upcomingDueDates().length > 0) {
+            @for (item of upcomingDueDates(); track item.name) {
+              <div class="list-item d-flex justify-content-between">
+                <div class="item-info">
+                  <div class="item-title">{{item.name}}</div>
+                  <div class="item-subtext d-flex align-items-center"><mat-icon class="inline-icon">schedule</mat-icon>
+                    {{item.date}}</div>
+                </div>
+                <div class="item-action text-end">
+                  <div class="item-amount">₹{{item.amount | number}}</div>
+                  <span class="priority-chip" [ngClass]="item.priority.toLowerCase()">{{item.priority}}</span>
+                </div>
+              </div>
+            }
+          } @else {
+            <div class="card-empty-state">
+              <mat-icon>event_available</mat-icon>
+              <p>No upcoming due dates</p>
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Bottom Row -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-md-6 col-lg-4">
+      <mat-card class="grid-card h-100">
+        <mat-card-header>
+          <mat-card-title>Recent Payments</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (recentPayments().length > 0) {
+            @for (item of recentPayments(); track item.name) {
+              <div class="list-item d-flex justify-content-between align-items-center">
+                <div class="item-info d-flex align-items-center">
+                  <div class="icon-circle bg-green-soft me-3">
+                    <mat-icon class="text-success small-icon">check</mat-icon>
+                  </div>
+                  <div>
+                    <div class="item-title">{{item.name}}</div>
+                    <div class="item-subtext">{{item.method}} - {{item.date}}</div>
+                  </div>
+                </div>
+                <div class="item-amount">₹{{item.amount | number}}</div>
+              </div>
+            }
+          } @else {
+            <div class="card-empty-state">
+              <mat-icon>receipt_long</mat-icon>
+              <p>No payments recorded yet</p>
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-12 col-md-6 col-lg-4">
+      <mat-card class="grid-card h-100">
+        <mat-card-header>
+          <mat-card-title>Priority Actions</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @for (action of priorityActions; track action.title) {
+            <div class="list-item d-flex align-items-start">
+              <div class="icon-circle bg-{{action.color}}-soft me-3 mt-1">
+                <mat-icon [color]="action.color" class="small-icon">{{action.icon}}</mat-icon>
+              </div>
+              <div>
+                <div class="item-title">{{action.title}}</div>
+                <div class="item-subtext">{{action.description}}</div>
+              </div>
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-12 col-md-12 col-lg-4">
+      <mat-card class="grid-card h-100">
+        <mat-card-header>
+          <mat-card-title>Quick Actions</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="row g-2">
+            <div class="col-6">
+              <button class="qa-btn w-100 h-100">
+                <mat-icon>add</mat-icon>
+                <span>Add Debt</span>
+              </button>
+            </div>
+            <div class="col-6">
+              <button class="qa-btn w-100 h-100" (click)="openRecordPayment()">
+                <mat-icon>receipt_long</mat-icon>
+                <span>Record Payment</span>
+              </button>
+            </div>
+            <div class="col-6">
+              <button class="qa-btn w-100 h-100" (click)="openAddExpense()">
+                <mat-icon>add_shopping_cart</mat-icon>
+                <span>Add Expense</span>
+              </button>
+            </div>
+            <div class="col-6">
+              <button class="qa-btn w-100 h-100">
+                <mat-icon>payments</mat-icon>
+                <span>Update Income</span>
+              </button>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Debt Progress Section -->
+  <mat-card class="progress-section-card">
+    <mat-card-header>
+      <mat-card-title>Debt Progress</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      @if (debtProgress().length > 0) {
+        <div class="row">
+          @for (debt of debtProgress(); track debt.name) {
+            <div class="col-12 col-md-6 mb-3">
+              <div class="progress-item px-2">
+                <div class="d-flex justify-content-between mb-1">
+                  <span class="progress-name">{{debt.name}}</span>
+                  <span class="progress-values text-secondary">₹{{debt.current | number}} / ₹{{debt.target | number}}</span>
+                </div>
+                <mat-progress-bar mode="determinate" [value]="(debt.current / debt.target) * 100"></mat-progress-bar>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="card-empty-state">
+          <mat-icon>account_balance_wallet</mat-icon>
+          <p>No debts added yet. Start tracking your repayment progress by adding a debt.</p>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<!-- Add Expense Dialog -->
+<ng-template #addExpenseDialog>
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2>Add Expense</h2>
+      <button type="button" class="modal-close-btn" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+      <form [formGroup]="expenseForm" class="d-flex flex-column gap-3">
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Category</mat-label>
+              <mat-select formControlName="category">
+                @for (cat of categories; track cat) {
+                  <mat-option [value]="cat">{{ cat }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-sm-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Amount (₹)</mat-label>
+              <input matInput type="number" formControlName="amount" placeholder="e.g. 5000">
+            </mat-form-field>
+          </div>
+        </div>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Description</mat-label>
+          <input matInput formControlName="description" placeholder="e.g. Monthly rent, Power bill">
+        </mat-form-field>
+
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Frequency</mat-label>
+              <mat-select formControlName="frequency">
+                @for (freq of frequencies; track freq) {
+                  <mat-option [value]="freq">{{ freq }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-sm-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Date</mat-label>
+              <input matInput type="date" formControlName="date">
+            </mat-form-field>
+          </div>
+        </div>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Notes (Optional)</mat-label>
+          <textarea matInput formControlName="notes" rows="2" placeholder="Any notes..."></textarea>
+        </mat-form-field>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button mat-button mat-dialog-close>Cancel</button>
+      <button mat-flat-button color="primary" (click)="saveExpense()" [disabled]="expenseForm.invalid">
+        Save Expense
+      </button>
+    </div>
+  </div>
+</ng-template>

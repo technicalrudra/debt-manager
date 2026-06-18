@@ -1,0 +1,25 @@
+<div class="sidebar-content" [class.is-collapsed]="isCollapsed">
+  <div>
+    <div class="logo-container">
+      <mat-icon class="logo-icon">account_balance</mat-icon>
+      <div class="logo-info" *ngIf="!isCollapsed">
+        <span class="logo-text">Debt Manager</span>
+        <span class="logo-sub">Personal finance</span>
+      </div>
+    </div>
+    <mat-nav-list class="nav-list">
+      <a mat-list-item *ngFor="let item of navItems()" [routerLink]="item.route" routerLinkActive="active-link" class="nav-item">
+        <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+        <span matListItemTitle *ngIf="!isCollapsed">{{ item.label }}</span>
+      </a>
+    </mat-nav-list>
+  </div>
+
+  <div class="sidebar-footer" *ngIf="!isCollapsed">
+    <div class="status-card">
+      <div class="status-label">Debt-free by</div>
+      <div class="status-value">Jun 2029</div>
+      <div class="status-sub">Stay on track with weekly check-ins.</div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,231 @@
+<div class="container-fluid py-3">
+  <div class="page-header mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div>
+      <h1 class="page-title mb-1">Income Sources</h1>
+      <p class="text-secondary subtitle mb-0">Manage and track your various streams of income.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <button mat-flat-button color="primary" class="action-button px-4" (click)="openAddDialog()">
+        <mat-icon>add</mat-icon> Add Income
+      </button>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-sm-4">
+      <mat-card class="kpi-card h-100">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div class="kpi-icon-box bg-green-soft">
+            <mat-icon class="text-success">attach_money</mat-icon>
+          </div>
+        </div>
+        <div class="kpi-label">Total Monthly Income</div>
+        @if (getTotalIncome() > 0) {
+          <div class="kpi-value">₹{{ getTotalIncome() | number:'1.0-0' }}</div>
+        } @else {
+          <div class="kpi-no-data">
+            <div class="kpi-no-data-dash">—</div>
+            <div class="kpi-no-data-text">No income added</div>
+          </div>
+        }
+      </mat-card>
+    </div>
+
+    <div class="col-12 col-sm-4">
+      <mat-card class="kpi-card h-100">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div class="kpi-icon-box bg-indigo-soft">
+            <mat-icon class="text-primary">workspaces</mat-icon>
+          </div>
+        </div>
+        <div class="kpi-label">Active Sources</div>
+        @if (sourceCount() > 0) {
+          <div class="kpi-value">{{ sourceCount() }}</div>
+        } @else {
+          <div class="kpi-no-data">
+            <div class="kpi-no-data-dash">—</div>
+            <div class="kpi-no-data-text">No sources added</div>
+          </div>
+        }
+      </mat-card>
+    </div>
+
+    <div class="col-12 col-sm-4">
+      <mat-card class="kpi-card h-100">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div class="kpi-icon-box bg-orange-soft">
+            <mat-icon class="text-warning">star</mat-icon>
+          </div>
+        </div>
+        <div class="kpi-label">Highest Source</div>
+        @if (highestSource()) {
+          <div class="kpi-value" style="font-size: 18px;">{{ highestSource()!.source_name }}</div>
+          <div class="text-secondary" style="font-size: 12px; margin-top: 2px;">₹{{ highestSource()!.amount | number:'1.0-0' }}/mo</div>
+        } @else {
+          <div class="kpi-no-data">
+            <div class="kpi-no-data-dash">—</div>
+            <div class="kpi-no-data-text">No sources added</div>
+          </div>
+        }
+      </mat-card>
+    </div>
+  </div>
+
+  @if (filteredIncome().length > 0) {
+    <mat-card class="grid-card debt-table-card">
+      <div class="debt-card-header">
+        <span class="debt-card-title">Income Sources</span>
+      </div>
+      <mat-card-content class="p-0">
+        <div class="table-responsive">
+          <table mat-table [dataSource]="filteredIncome()" class="w-100 modern-table">
+
+            <ng-container matColumnDef="source_name">
+              <th mat-header-cell *matHeaderCellDef> Source </th>
+              <td mat-cell *matCellDef="let element">
+                <div class="fw-bold text-dark">{{element.source_name}}</div>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="type">
+              <th mat-header-cell *matHeaderCellDef> Type </th>
+              <td mat-cell *matCellDef="let element">
+                <span class="badge bg-primary-soft text-primary">{{element.type}}</span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="amount">
+              <th mat-header-cell *matHeaderCellDef> Amount </th>
+              <td mat-cell *matCellDef="let element" class="fw-bold text-success">
+                ₹{{element.amount | number:'1.0-0'}}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="frequency">
+              <th mat-header-cell *matHeaderCellDef> Frequency </th>
+              <td mat-cell *matCellDef="let element"> {{element.frequency}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="lastUpdated">
+              <th mat-header-cell *matHeaderCellDef> Updated </th>
+              <td mat-cell *matCellDef="let element" class="text-secondary text-xs">
+                {{(element.updated_at || element.created_at) | date:'mediumDate'}}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef class="text-end"> Actions </th>
+              <td mat-cell *matCellDef="let element" class="text-end">
+                <button mat-icon-button color="primary" (click)="openEditDialog(element)" matTooltip="Edit">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="confirmDelete(element)" matTooltip="Delete">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row"></tr>
+          </table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  } @else {
+    <app-empty-state
+      icon="account_balance"
+      title="No Income Sources Found"
+      description="You haven't added any income sources yet. Track your salary and other earnings to get better insights."
+      actionLabel="Add Income"
+      (action)="openAddDialog()">
+    </app-empty-state>
+  }
+</div>
+
+<!-- Add / Edit Income Dialog -->
+<ng-template #incomeDialog>
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2>{{ currentEditingIncome ? 'Edit Income Source' : 'Add Income Source' }}</h2>
+      <button type="button" class="modal-close-btn" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="incomeForm" class="d-flex flex-column gap-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Source Name</mat-label>
+          <input matInput formControlName="source_name" placeholder="e.g. Acme Corp Salary">
+        </mat-form-field>
+
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Type</mat-label>
+              <mat-select formControlName="type">
+                @for (cat of types; track cat) {
+                  <mat-option [value]="cat">{{cat}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-sm-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Amount (₹)</mat-label>
+              <input matInput type="number" formControlName="amount" placeholder="e.g. 50000">
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Frequency</mat-label>
+              <mat-select formControlName="frequency">
+                @for (freq of frequencies; track freq) {
+                  <mat-option [value]="freq">{{freq}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-sm-6 d-flex align-items-center">
+            <div class="form-check form-switch ms-2">
+              <input class="form-check-input" type="checkbox" id="recurringSwitch" formControlName="recurring">
+              <label class="form-check-label" for="recurringSwitch">Recurring Income</label>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button mat-button mat-dialog-close>Cancel</button>
+      <button mat-flat-button color="primary" (click)="saveIncome()" [disabled]="incomeForm.invalid">
+        {{ currentEditingIncome ? 'Update' : 'Save' }}
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Delete Confirmation Dialog -->
+<ng-template #deleteConfirmDialog>
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2 class="d-flex align-items-center gap-2 text-danger">
+        <mat-icon>warning</mat-icon> Delete Income
+      </h2>
+      <button type="button" class="modal-close-btn" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="text-secondary mb-0">
+        Are you sure you want to delete <strong class="text-dark">{{ incomeToDelete?.source_name }}</strong>?
+        This action cannot be undone.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button mat-button mat-dialog-close>Cancel</button>
+      <button mat-flat-button color="warn" (click)="deleteIncome()">Delete</button>
+    </div>
+  </div>
+</ng-template>

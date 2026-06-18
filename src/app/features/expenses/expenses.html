@@ -1,0 +1,373 @@
+<div class="expenses-container py-3">
+  
+  <!-- Premium Page Header -->
+  <div class="expenses-header mb-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+    <div>
+      <h1 class="expenses-title mb-1">Expenses</h1>
+      <p class="expenses-subtitle text-secondary mb-0">Track your monthly spending and understand how much money is available for debt repayment.</p>
+    </div>
+    
+    <div class="d-flex align-items-center gap-2">
+      <!-- Month / Year picker -->
+      <div class="month-selector" (click)="monthPicker.open()">
+        {{ selectedMonthLabel }} <mat-icon>keyboard_arrow_down</mat-icon>
+      </div>
+      <!-- Hidden anchor for Angular Material datepicker -->
+      <mat-form-field style="width:0;height:0;overflow:hidden;opacity:0;position:absolute">
+        <input matInput [matDatepicker]="monthPicker" [value]="selectedMonth()">
+        <mat-datepicker #monthPicker startView="multi-year"
+          (monthSelected)="onMonthSelected($event, monthPicker)">
+        </mat-datepicker>
+      </mat-form-field>
+
+      <!-- Add Expense Button -->
+      <button mat-raised-button color="primary" class="action-btn-filled" (click)="openAddDialog()">
+        <mat-icon>add</mat-icon> Add Expense
+      </button>
+    </div>
+  </div>
+
+
+  <!-- Top KPI Cards (4 Cards) -->
+  @if (expenseService.expenses().length > 0) {
+  <div class="row g-3 mb-4">
+    <!-- Total Expenses KPI -->
+    <div class="col-12 col-sm-6 col-xl-3">
+      <mat-card class="kpi-card h-100">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div class="kpi-icon-box bg-red-soft text-danger">
+            <mat-icon>payments</mat-icon>
+          </div>
+          <span class="kpi-trend text-danger font-medium">+6.5%</span>
+        </div>
+        <div class="kpi-label">Total Monthly Expenses</div>
+        <div class="kpi-value">₹{{ getTotalExpenses() | number:'1.0-0' }}</div>
+        <div class="text-xs text-secondary mt-1">₹36,000 categorized this month</div>
+      </mat-card>
+    </div>
+
+    <!-- Largest Expense Category -->
+    <div class="col-12 col-sm-6 col-xl-3">
+      <mat-card class="kpi-card h-100">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div class="kpi-icon-box bg-indigo-soft text-indigo">
+            <mat-icon>home</mat-icon>
+          </div>
+          <span class="kpi-trend text-secondary font-medium">50%</span>
+        </div>
+        <div class="kpi-label">Largest Expense Category</div>
+        <div class="kpi-value" style="font-size: 18px; line-height: 1.4; padding-top: 4px;">{{ getLargestCategory() }}</div>
+        <div class="text-xs text-secondary mt-1">Rent occupies half of your outflow</div>
+      </mat-card>
+    </div>
+
+    <!-- Available Surplus -->
+    <div class="col-12 col-sm-6 col-xl-3">
+      <mat-card class="kpi-card h-100">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div class="kpi-icon-box bg-green-soft text-success">
+            <mat-icon>account_balance_wallet</mat-icon>
+          </div>
+          <span class="kpi-trend text-success font-medium">Stable</span>
+        </div>
+        <div class="kpi-label">Available Surplus</div>
+        <div class="kpi-value">₹{{ getAvailableSurplus() | number:'1.0-0' }}</div>
+        <div class="text-xs text-secondary mt-1">Ready to accelerate debt payoff</div>
+      </mat-card>
+    </div>
+
+    <!-- Expense Change vs Last Month -->
+    <div class="col-12 col-sm-6 col-xl-3">
+      <mat-card class="kpi-card h-100">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div class="kpi-icon-box bg-orange-soft text-warning">
+            <mat-icon>trending_up</mat-icon>
+          </div>
+          <span class="kpi-trend text-danger font-medium">+₹2,200</span>
+        </div>
+        <div class="kpi-label">Change vs Last Month</div>
+        <div class="kpi-value">+6.5%</div>
+        <div class="text-xs text-secondary mt-1">Compared to April 2026 (₹33,800)</div>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="row g-4 mb-4">
+    <!-- Monthly Expense Trend Line Chart -->
+    <div class="col-12 col-xl-7 col-xxl-8">
+      <mat-card class="chart-card h-100">
+        <mat-card-header>
+          <mat-card-title>Monthly Expense Trend</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="line-chart-container">
+          <canvas baseChart 
+            [data]="trendChartData()" 
+            [options]="trendChartOptions" 
+            [type]="trendChartType">
+          </canvas>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Category Breakdown Donut Chart -->
+    <div class="col-12 col-xl-5 col-xxl-4">
+      <mat-card class="chart-card h-100">
+        <mat-card-header>
+          <mat-card-title>Category Breakdown</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="d-flex flex-column align-items-center justify-content-center">
+          <div class="donut-container mb-3">
+            <canvas baseChart 
+              [data]="donutChartData()" 
+              [options]="donutChartOptions" 
+              type="doughnut">
+            </canvas>
+          </div>
+          <!-- Custom legends with sums -->
+          <div class="w-100 px-2 mt-2">
+            <div class="row g-2">
+              @for (cat of categories; track cat; let idx = $index) {
+                <div class="col-6 col-sm-4 col-xl-6">
+                  <div class="d-flex align-items-center gap-2 mb-1" style="font-size: 12px;">
+                    <span class="dot" [style.background-color]="getCategoryColor(idx)"></span>
+                    <span class="text-secondary fw-medium">{{cat}}</span>
+                  </div>
+                  <div class="fw-bold ps-3 text-dark" style="font-size: 13px;">
+                    ₹{{ getCategoryTotal(cat) | number:'1.0-0' }} ({{ getCategoryPercentage(cat) }}%)
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Category Summary Cards -->
+  <h3 class="fw-bold text-dark mb-3" style="font-size: 16px;">Category Summary</h3>
+  <div class="row g-3 mb-4">
+    @for (cat of categories; track cat) {
+      <div class="col-6 col-sm-4 col-md-3 col-xl-2 d-flex align-items-stretch">
+        <div class="summary-tile shadow-sm w-100">
+          <div class="summary-icon mx-auto mb-2 bg-indigo-soft text-indigo rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+            @if (cat === 'Rent') { <mat-icon>home</mat-icon> }
+            @if (cat === 'Electricity') { <mat-icon>bolt</mat-icon> }
+            @if (cat === 'Household') { <mat-icon>shopping_bag</mat-icon> }
+            @if (cat === 'Fuel') { <mat-icon>local_gas_station</mat-icon> }
+            @if (cat === 'Internet') { <mat-icon>wifi</mat-icon> }
+            @if (cat === 'Miscellaneous') { <mat-icon>category</mat-icon> }
+          </div>
+          <div>
+            <div class="text-secondary text-xs fw-medium mb-1">{{cat}}</div>
+            <div class="fw-bold text-dark mb-1" style="font-size: 15px;">₹{{ getCategoryTotal(cat) | number:'1.0-0' }}</div>
+            <div class="text-xs text-indigo fw-bold">{{ getCategoryPercentage(cat) }}% of total</div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Insights Panel -->
+  <mat-card class="premium-card mb-4 bg-primary-soft border border-indigo" style="box-shadow: none !important;">
+    <div class="d-flex align-items-start gap-3 p-2">
+      <div class="bg-indigo text-white rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; flex-shrink: 0; background: #4f46e5;">
+        <mat-icon>tips_and_updates</mat-icon>
+      </div>
+      <div>
+        <h4 class="fw-bold text-indigo mb-2" style="font-size: 15px;">Fintech Spending Insights</h4>
+        <ul class="mb-0 ps-3 text-sm text-dark d-flex flex-column gap-2">
+          <li><strong>High Concentration:</strong> Rent accounts for {{ getCategoryPercentage('Rent') }}% of your total monthly expenses. Consider reviewing shared household costs if needed.</li>
+          <li><strong>Category Outflow:</strong> Fuel is your second largest category at ₹{{ getCategoryTotal('Fuel') | number }} ({{ getCategoryPercentage('Fuel') }}%). Sharing rides could optimize this.</li>
+          <li><strong>Debt Payoff Catalyst:</strong> Reducing non-essential or discretionary expenses by <strong>₹5,000</strong> would boost your Available Surplus to <strong>₹{{ getAvailableSurplus() + 5000 | number:'1.0-0' }}</strong>, cutting your debt payoff journey down by several months.</li>
+        </ul>
+      </div>
+    </div>
+  </mat-card>
+
+  <!-- Expenses Table Card -->
+  <mat-card class="grid-card debt-table-card mb-4">
+    <div class="debt-card-header">
+      <span class="debt-card-title">Expenses Breakdown</span>
+    </div>
+    <mat-card-content class="p-0">
+      <div class="table-responsive">
+        <table mat-table [dataSource]="filteredExpenses()" class="w-100 modern-table">
+
+          <ng-container matColumnDef="category">
+            <th mat-header-cell *matHeaderCellDef>Category</th>
+            <td mat-cell *matCellDef="let element">
+              <div class="d-flex align-items-center gap-2">
+                <div class="summary-icon bg-indigo-soft text-indigo rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; flex-shrink: 0;">
+                  @if (element.category === 'Rent') { <mat-icon style="font-size: 16px; width: 16px; height: 16px;">home</mat-icon> }
+                  @if (element.category === 'Electricity') { <mat-icon style="font-size: 16px; width: 16px; height: 16px;">bolt</mat-icon> }
+                  @if (element.category === 'Household') { <mat-icon style="font-size: 16px; width: 16px; height: 16px;">shopping_bag</mat-icon> }
+                  @if (element.category === 'Fuel') { <mat-icon style="font-size: 16px; width: 16px; height: 16px;">local_gas_station</mat-icon> }
+                  @if (element.category === 'Internet') { <mat-icon style="font-size: 16px; width: 16px; height: 16px;">wifi</mat-icon> }
+                  @if (element.category === 'Miscellaneous') { <mat-icon style="font-size: 16px; width: 16px; height: 16px;">category</mat-icon> }
+                </div>
+                <span class="fw-bold">{{element.category}}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>Description</th>
+            <td mat-cell *matCellDef="let element" class="text-secondary">{{element.description}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef>Amount</th>
+            <td mat-cell *matCellDef="let element" class="fw-bold text-danger">₹{{element.amount | number:'1.0-0'}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="frequency">
+            <th mat-header-cell *matHeaderCellDef>Frequency</th>
+            <td mat-cell *matCellDef="let element">
+              <span class="badge bg-primary-soft text-primary">{{element.frequency}}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="lastUpdated">
+            <th mat-header-cell *matHeaderCellDef>Last Updated</th>
+            <td mat-cell *matCellDef="let element" class="text-secondary text-xs">
+              {{(element.updated_at || element.created_at || element.date) | date:'d MMM yyyy'}}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="text-end">Actions</th>
+            <td mat-cell *matCellDef="let element" class="text-end">
+              <button mat-icon-button color="primary" (click)="openEditDialog(element)" matTooltip="Edit">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="confirmDelete(element)" matTooltip="Delete">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row"></tr>
+        </table>
+
+        @if (filteredExpenses().length === 0) {
+          <app-empty-state
+            icon="calendar_month"
+            title="No expenses this month"
+            description="No expenses were recorded for {{ selectedMonthLabel }}. Try a different month or add a new expense.">
+          </app-empty-state>
+        }
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  } @else {
+    <app-empty-state
+      icon="payments"
+      title="No Expenses Tracked"
+      description="Start tracking your spending to understand where your money goes and uncover savings for debt repayment."
+      actionLabel="Add Your First Expense"
+      (action)="openAddDialog()">
+    </app-empty-state>
+  }
+
+</div>
+
+<!-- Add / Edit Expense Dialog -->
+<ng-template #expenseDialog>
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2>{{ currentEditingExpense ? 'Edit Expense' : 'Add New Expense' }}</h2>
+      <button type="button" class="modal-close-btn" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+      <form [formGroup]="expenseForm" class="d-flex flex-column gap-3">
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Category</mat-label>
+              <mat-select formControlName="category">
+                @for (cat of categories; track cat) {
+                  <mat-option [value]="cat">{{cat}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-sm-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Amount (₹)</mat-label>
+              <input matInput type="number" formControlName="amount" placeholder="e.g. 5000">
+            </mat-form-field>
+          </div>
+        </div>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Description</mat-label>
+          <input matInput formControlName="description" placeholder="e.g. Monthly rent, Power bill">
+        </mat-form-field>
+
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Frequency</mat-label>
+              <mat-select formControlName="frequency">
+                @for (freq of frequencies; track freq) {
+                  <mat-option [value]="freq">{{freq}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-sm-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Date</mat-label>
+              <input matInput type="date" formControlName="date">
+            </mat-form-field>
+          </div>
+        </div>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Notes (Optional)</mat-label>
+          <textarea matInput formControlName="notes" rows="2" placeholder="Any notes..."></textarea>
+        </mat-form-field>
+
+        <div class="d-flex align-items-center gap-2 ps-1">
+          <input class="form-check-input m-0" type="checkbox" id="recurringSwitch" formControlName="recurring">
+          <label class="form-check-label" for="recurringSwitch">Recurring monthly outflow</label>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button mat-button mat-dialog-close>Cancel</button>
+      <button mat-flat-button color="primary" (click)="saveExpense()" [disabled]="expenseForm.invalid">
+        {{ currentEditingExpense ? 'Update' : 'Save Expense' }}
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Delete Confirmation Dialog -->
+<ng-template #deleteConfirmDialog>
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2 class="d-flex align-items-center gap-2 text-danger">
+        <mat-icon>warning</mat-icon> Delete Expense
+      </h2>
+      <button type="button" class="modal-close-btn" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="text-secondary mb-0">
+        Are you sure you want to delete this expense? This cannot be undone.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button mat-button mat-dialog-close>Cancel</button>
+      <button mat-flat-button color="warn" (click)="deleteExpense()">Delete</button>
+    </div>
+  </div>
+</ng-template>

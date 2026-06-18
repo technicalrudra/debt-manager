@@ -1,0 +1,46 @@
+<mat-toolbar class="header">
+  <div class="header-left d-flex align-items-center">
+    <button mat-icon-button class="me-2" (click)="onToggle()">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <div class="search-container d-none d-md-flex flex-grow-1">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input type="text" placeholder="Search debts, payments, goals..." class="search-input">
+    </div>
+  </div>
+  
+  <div class="header-right">
+    <div class="month-selector">
+      <span>May 2026</span>
+      <mat-icon>keyboard_arrow_down</mat-icon>
+    </div>
+
+    <button mat-icon-button class="header-action">
+      <mat-icon>dark_mode</mat-icon>
+    </button>
+    <button mat-icon-button class="header-action">
+      <mat-icon>notifications</mat-icon>
+      <span class="notification-badge"></span>
+    </button>
+    
+    <div class="user-profile" [matMenuTriggerFor]="userMenu">
+      <div class="avatar">{{ (authService.currentProfile()?.full_name || 'U') | slice:0:1 | uppercase }}</div>
+      <mat-icon class="profile-arrow">keyboard_arrow_down</mat-icon>
+    </div>
+    
+    <mat-menu #userMenu="matMenu" class="custom-menu">
+      <button mat-menu-item>
+        <mat-icon>person</mat-icon>
+        <span>Profile</span>
+      </button>
+      <button mat-menu-item>
+        <mat-icon>settings</mat-icon>
+        <span>Settings</span>
+      </button>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Logout</span>
+      </button>
+    </mat-menu>
+  </div>
+</mat-toolbar>

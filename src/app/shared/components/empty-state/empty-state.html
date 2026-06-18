@@ -1,0 +1,10 @@
+<div class="empty-state-container d-flex flex-column align-items-center justify-content-center text-center p-5">
+  <div class="empty-state-icon mb-3">
+    <mat-icon>{{ icon }}</mat-icon>
+  </div>
+  <h3 class="empty-state-title fw-bold mb-2">{{ title }}</h3>
+  <p class="empty-state-description text-secondary mb-4">{{ description }}</p>
+  <button *ngIf="actionLabel" mat-raised-button color="primary" class="action-btn-filled" (click)="onActionClick()">
+    {{ actionLabel }}
+  </button>
+</div>

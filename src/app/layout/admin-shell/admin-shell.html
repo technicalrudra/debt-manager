@@ -1,0 +1,11 @@
+<mat-sidenav-container class="sidenav-container bg-admin-light" [autosize]="true">
+  <mat-sidenav mode="side" opened class="sidenav" [class.collapsed]="isCollapsed()">
+    <app-admin-sidebar [isCollapsed]="isCollapsed()"></app-admin-sidebar>
+  </mat-sidenav>
+  <mat-sidenav-content class="sidenav-content">
+    <app-header (toggleSidebar)="toggleSidebar()"></app-header>
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

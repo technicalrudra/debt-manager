@@ -1,0 +1,355 @@
+<div class="profile-container py-3">
+  <div class="profile-header mb-4">
+    <h1 class="profile-title">My Profile</h1>
+    <p class="profile-subtitle">View and manage your personal information.</p>
+  </div>
+  
+  <div class="row g-4">
+    <!-- Left Column -->
+    <div class="col-12 col-lg-4 col-xl-3.5">
+      <!-- Profile Summary Card -->
+      <div class="premium-card text-center mb-4">
+        <div class="avatar-circle">
+          {{ (userDataService.profile()?.full_name || 'U') | slice:0:1 | uppercase }}
+        </div>
+        <h2 class="profile-name">{{ userDataService.profile()?.full_name || 'User' }}</h2>
+        <p class="profile-email mb-3">{{ userDataService.profile()?.email || 'N/A' }}</p>
+        
+        <div class="active-badge mb-4">
+          Active Member
+        </div>
+        
+        <button class="btn-edit-profile" (click)="openEditDialog()">
+          Edit Profile
+        </button>
+      </div>
+      
+      <!-- Contact Info Card -->
+      <div class="premium-card">
+        <div class="contact-info-section">
+          <h3 class="contact-title">CONTACT INFO</h3>
+          
+          <div class="contact-item">
+            <mat-icon class="contact-icon">mail_outline</mat-icon>
+            <span class="contact-text">{{ userDataService.profile()?.email || 'N/A' }}</span>
+          </div>
+          
+          <div class="contact-item">
+            <mat-icon class="contact-icon">phone</mat-icon>
+            <span class="contact-text">{{ userDataService.profile()?.mobile || 'Not provided' }}</span>
+          </div>
+          
+          <div class="contact-item">
+            <mat-icon class="contact-icon">calendar_today</mat-icon>
+            <span class="contact-text">Joined {{ (userDataService.profile()?.created_at || today) | date:'d MMM yyyy' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Right Column -->
+    <div class="col-12 col-lg-8 col-xl-8.5">
+      <!-- Income Sources Card -->
+      <div class="premium-card mb-4">
+        <div class="section-header">
+          <div class="header-title-wrapper">
+            <mat-icon class="header-icon text-success">trending_up</mat-icon>
+            <h3 class="header-title">Income Sources</h3>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="header-total">Total: {{ userDataService.totalMonthlyIncome() | currency:'INR':'symbol':'1.0-0' }}/mo</span>
+            <button mat-icon-button class="btn-card-action" (click)="openIncomeDialog()" title="Manage Income">
+              <mat-icon style="font-size: 18px; width: 18px; height: 18px;">edit</mat-icon>
+            </button>
+          </div>
+        </div>
+        
+        <div class="income-list">
+          <div class="list-item-row" *ngFor="let income of userDataService.incomeSources()">
+            <div class="item-left">
+              <span class="item-name">{{ income.source_name }}</span>
+              <span class="item-sub">{{ income.frequency }}</span>
+            </div>
+            <span class="item-amount">{{ income.amount | currency:'INR':'symbol':'1.0-0' }}</span>
+          </div>
+          
+          <div class="empty-state text-center py-5 opacity-75" *ngIf="userDataService.incomeSources().length === 0">
+            <mat-icon style="font-size: 36px; width: 36px; height: 36px;" class="mb-2 text-secondary">payments</mat-icon>
+            <p class="mb-0 text-sm">No income sources added yet.</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Current Debts Card -->
+      <div class="premium-card">
+        <div class="section-header">
+          <div class="header-title-wrapper">
+            <mat-icon class="header-icon text-danger">credit_card</mat-icon>
+            <h3 class="header-title">Current Debts</h3>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="header-total">Total: {{ debtService.getTotalDebtBalance() | currency:'INR':'symbol':'1.0-0' }}</span>
+            <button mat-icon-button class="btn-card-action" (click)="openDebtsDialog()" title="Manage Debts">
+              <mat-icon style="font-size: 18px; width: 18px; height: 18px;">edit</mat-icon>
+            </button>
+          </div>
+        </div>
+        
+        <div class="debts-list">
+          <div class="list-item-row" *ngFor="let debt of debtService.debts()">
+            <div class="item-left">
+              <span class="item-name">{{ debt.name }}</span>
+              <span class="item-sub">EMI: {{ debt.emi | currency:'INR':'symbol':'1.0-0' }}</span>
+            </div>
+            <span class="item-amount">{{ debt.current_balance | currency:'INR':'symbol':'1.0-0' }}</span>
+          </div>
+          
+          <div class="empty-state text-center py-5 opacity-75" *ngIf="debtService.debts().length === 0">
+            <mat-icon style="font-size: 36px; width: 36px; height: 36px;" class="mb-2 text-secondary">account_balance_wallet</mat-icon>
+            <p class="mb-0 text-sm">No active debts added yet.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Profile Modal Template (Name, Email, Mobile, Location, Employment) -->
+<ng-template #editDialog>
+  <div class="modal-container">
+    <div class="modal-header d-flex justify-content-between align-items-center p-3 border-bottom bg-light">
+      <h3 class="modal-title mb-0 fw-bold text-indigo">Edit Profile Details</h3>
+      <button mat-icon-button mat-dialog-close class="btn-close-dialog">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    
+    <div class="modal-body p-4" style="max-height: 70vh; overflow-y: auto;">
+      <form [formGroup]="profileForm" (ngSubmit)="save()">
+        <div class="row g-3">
+          <div class="col-12 col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Full Name</mat-label>
+              <input matInput formControlName="full_name">
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Mobile Number</mat-label>
+              <input matInput formControlName="mobile">
+            </mat-form-field>
+          </div>
+          <div class="col-12">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Email Address</mat-label>
+              <input matInput formControlName="email">
+            </mat-form-field>
+          </div>
+          
+          <div class="col-12 col-md-4">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>City</mat-label>
+              <input matInput formControlName="city">
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-md-4">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>State</mat-label>
+              <input matInput formControlName="state">
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-md-4">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Country</mat-label>
+              <input matInput formControlName="country">
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Company Name</mat-label>
+              <input matInput formControlName="company">
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Job Title</mat-label>
+              <input matInput formControlName="job_title">
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Employment Type</mat-label>
+              <mat-select formControlName="employment_type">
+                <mat-option *ngFor="let type of employmentTypes" [value]="type">{{type}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Preferred Currency</mat-label>
+              <mat-select formControlName="currency">
+                <mat-option value="INR">INR (₹)</mat-option>
+                <mat-option value="USD">USD ($)</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 d-flex justify-content-end mt-4 gap-2 align-items-center">
+            <button mat-button mat-dialog-close type="button">Cancel</button>
+            <button mat-flat-button color="primary" type="submit" [disabled]="profileForm.invalid" mat-dialog-close class="px-4">Save Changes</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Manage Income Modal Template -->
+<ng-template #incomeDialog>
+  <div class="modal-container">
+    <div class="modal-header d-flex justify-content-between align-items-center p-3 border-bottom bg-light">
+      <h3 class="modal-title mb-0 fw-bold text-success">Manage Income Sources</h3>
+      <button mat-icon-button mat-dialog-close class="btn-close-dialog">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    
+    <div class="modal-body p-4" style="max-height: 70vh; overflow-y: auto;">
+      <form [formGroup]="incomeForm" (ngSubmit)="addIncome()" class="bg-light p-3 rounded-3 mb-4 border">
+        <div class="row g-3">
+          <div class="col-12 col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Income Type</mat-label>
+              <mat-select formControlName="type">
+                <mat-option *ngFor="let type of incomeTypes" [value]="type">{{type}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Source Name</mat-label>
+              <input matInput formControlName="source_name" placeholder="e.g. salary">
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Monthly Amount (₹)</mat-label>
+              <input matInput type="number" formControlName="amount">
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Frequency</mat-label>
+              <mat-select formControlName="frequency">
+                <mat-option *ngFor="let f of frequencies" [value]="f">{{f}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-12">
+            <button mat-stroked-button color="primary" type="submit" [disabled]="incomeForm.invalid" class="w-100 py-2">
+              <mat-icon>add</mat-icon> Add Income Source
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <h4 class="fw-bold mb-3 text-secondary" style="font-size: 14px; letter-spacing: 0.05em;">CURRENT INCOME SOURCES</h4>
+      <div class="income-list border rounded-3 p-2 bg-white">
+        <div class="d-flex justify-content-between align-items-center p-3 border-bottom" *ngFor="let income of userDataService.incomeSources(); let i = index">
+          <div>
+            <div class="fw-bold text-dark" style="font-size: 15px;">{{income.source_name}}</div>
+            <div class="text-secondary text-xs">{{income.type}} • {{income.frequency}}</div>
+          </div>
+          <div class="d-flex align-items-center">
+            <div class="fw-bold text-success me-3">{{income.amount | currency:'INR':'symbol':'1.0-0'}}</div>
+            <button mat-icon-button color="warn" (click)="userDataService.removeIncome(income.id!)">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </div>
+        </div>
+        <div class="text-center py-4 text-secondary" *ngIf="userDataService.incomeSources().length === 0">
+          No income sources added yet.
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-footer p-3 bg-light border-top d-flex justify-content-end">
+      <button mat-flat-button color="primary" mat-dialog-close class="px-4">Done</button>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Manage Debts Modal Template -->
+<ng-template #debtsDialog>
+  <div class="modal-container">
+    <div class="modal-header d-flex justify-content-between align-items-center p-3 border-bottom bg-light">
+      <h3 class="modal-title mb-0 fw-bold text-danger">Manage Current Debts</h3>
+      <button mat-icon-button mat-dialog-close class="btn-close-dialog">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    
+    <div class="modal-body p-4" style="max-height: 70vh; overflow-y: auto;">
+      <form [formGroup]="debtForm" (ngSubmit)="addDebt()" class="bg-light p-3 rounded-3 mb-4 border">
+        <div class="row g-3">
+          <div class="col-12 col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Debt Name</mat-label>
+              <input matInput formControlName="name" placeholder="e.g. Loan">
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Debt Type</mat-label>
+              <mat-select formControlName="type">
+                <mat-option *ngFor="let type of debtTypes" [value]="type">{{type}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Current Balance (₹)</mat-label>
+              <input matInput type="number" formControlName="current_balance">
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Monthly EMI (₹)</mat-label>
+              <input matInput type="number" formControlName="emi">
+            </mat-form-field>
+          </div>
+          
+          <div class="col-12">
+            <button mat-stroked-button color="primary" type="submit" [disabled]="debtForm.invalid" class="w-100 py-2">
+              <mat-icon>add</mat-icon> Add Debt Details
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <h4 class="fw-bold mb-3 text-secondary" style="font-size: 14px; letter-spacing: 0.05em;">CURRENT DEBT DETAILS</h4>
+      <div class="debt-list border rounded-3 p-2 bg-white">
+        <div class="d-flex justify-content-between align-items-center p-3 border-bottom" *ngFor="let debt of debtService.debts(); let i = index">
+          <div>
+            <div class="fw-bold text-dark" style="font-size: 15px;">{{debt.name}}</div>
+            <div class="text-secondary text-xs">{{debt.type}} • EMI: {{debt.emi | currency:'INR':'symbol':'1.0-0'}}</div>
+          </div>
+          <div class="d-flex align-items-center">
+            <div class="fw-bold text-danger me-3">{{debt.current_balance | currency:'INR':'symbol':'1.0-0'}}</div>
+            <button mat-icon-button color="warn" (click)="debtService.deleteDebt(debt.id!)">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </div>
+        </div>
+        <div class="text-center py-4 text-secondary" *ngIf="debtService.debts().length === 0">
+          No debt items added yet.
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-footer p-3 bg-light border-top d-flex justify-content-end">
+      <button mat-flat-button color="primary" mat-dialog-close class="px-4">Done</button>
+    </div>
+  </div>
+</ng-template>

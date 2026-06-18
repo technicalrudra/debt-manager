@@ -1,0 +1,43 @@
+/* Styles migrated to global styles.scss */
+
+// Compact empty state inside KPI cards
+.kpi-no-data {
+  .kpi-no-data-dash {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #94a3b8;
+    line-height: 1.2;
+  }
+
+  .kpi-no-data-text {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-top: 2px;
+  }
+}
+
+// Compact empty state inside list/progress cards
+.card-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+  text-align: center;
+
+  mat-icon {
+    font-size: 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    color: #94a3b8;
+    margin-bottom: 0.75rem;
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    margin: 0;
+    max-width: 220px;
+    line-height: 1.5;
+  }
+}

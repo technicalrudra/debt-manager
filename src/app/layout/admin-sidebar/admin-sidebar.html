@@ -1,0 +1,24 @@
+<div class="sidebar-content" [class.is-collapsed]="isCollapsed">
+  <div>
+    <div class="logo-container">
+      <mat-icon class="logo-icon text-primary">admin_panel_settings</mat-icon>
+      <div class="logo-info" *ngIf="!isCollapsed">
+        <span class="logo-text">Debt Manager</span>
+        <span class="logo-sub">Admin Panel</span>
+      </div>
+    </div>
+    <mat-nav-list class="nav-list">
+      <a mat-list-item *ngFor="let item of navItems" [routerLink]="item.route" [routerLinkActiveOptions]="{exact: item.route === '/admin'}" routerLinkActive="active-link" class="nav-item">
+        <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+        <span matListItemTitle *ngIf="!isCollapsed">{{ item.label }}</span>
+      </a>
+      
+      <!-- User App Link -->
+      <div class="px-3 py-2 text-xs fw-bold text-secondary mt-4 mb-1" *ngIf="!isCollapsed" style="letter-spacing: 0.05em;">SWITCH</div>
+      <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link" class="nav-item">
+        <mat-icon matListItemIcon>exit_to_app</mat-icon>
+        <span matListItemTitle *ngIf="!isCollapsed">User App</span>
+      </a>
+    </mat-nav-list>
+  </div>
+</div>

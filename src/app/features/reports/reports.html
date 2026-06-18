@@ -1,0 +1,31 @@
+<div class="container-fluid py-2">
+  <div class="page-header mb-4">
+    <h1 class="welcome-text mb-1">Reports</h1>
+    <p class="text-secondary subtitle mb-0">Detailed insights into your financial health.</p>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <mat-card class="grid-card" *ngIf="hasData(); else noReports">
+        <mat-card-header>
+          <mat-card-title>Income vs Expenses (Monthly)</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="chart-container">
+          <canvas baseChart
+            [data]="barChartData()"
+            [options]="barChartOptions"
+            type="bar">
+          </canvas>
+        </mat-card-content>
+      </mat-card>
+      
+      <ng-template #noReports>
+        <app-empty-state 
+          icon="bar_chart"
+          title="Not Enough Data"
+          description="We need more income and expense data to generate meaningful reports. Keep tracking your finances!">
+        </app-empty-state>
+      </ng-template>
+    </div>
+  </div>
+</div>

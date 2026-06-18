@@ -1,0 +1,211 @@
+.onboarding-modal-container {
+  width: 100%;
+  min-width: 600px;
+  max-width: 600px;
+  padding: 0;
+  margin: 0;
+
+  .onboarding-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 32px 16px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .onboarding-content {
+    padding: 24px 32px 32px;
+  }
+
+  .step-progress-wrapper {
+    display: flex;
+    gap: 8px;
+  }
+
+  .progress-segment {
+    flex: 1;
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    transition: background 0.3s ease;
+
+    &.active {
+      background: var(--primary-color);
+    }
+  }
+
+  .step-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-top: 16px;
+    margin-bottom: 8px;
+  }
+
+  .step-instruction {
+    font-size: 15px;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .form-group {
+    label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+  }
+
+  .onboarding-input {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 14px;
+    width: 100%;
+    
+    &:focus {
+      border-color: var(--primary-color);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+  }
+
+  .nav-btn {
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+
+    &.next-btn {
+      background: var(--primary-color);
+      color: white;
+
+      &:disabled {
+        background: #94a3b8;
+        cursor: not-allowed;
+      }
+    }
+
+    &.complete-btn {
+      background: var(--success-color);
+      color: white;
+    }
+  }
+
+  .back-link-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--text-primary);
+    }
+  }
+
+  .form-card {
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+
+    .delete-card-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger-color);
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        background: var(--danger-color);
+        color: white;
+      }
+
+      i {
+        font-size: 12px;
+      }
+    }
+  }
+
+  .dashed-add-btn {
+    background: transparent;
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    color: var(--primary-color);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      border-color: var(--primary-color);
+      background: #f1f5f9;
+    }
+  }
+
+  .close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+
+    &:hover {
+      background: #f1f5f9;
+      color: var(--text-primary);
+    }
+  }
+
+  /* Override PrimeNG Dropdown */
+  .custom-p-dropdown {
+    width: 100% !important;
+
+    ::ng-deep .p-dropdown {
+      width: 100%;
+      border-radius: 8px;
+      border-color: var(--border-color);
+
+      .p-dropdown-label {
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+/* Responsive constraints */
+@media (max-width: 640px) {
+  .onboarding-modal-container {
+    min-width: 100%;
+    max-width: 100%;
+    
+    .onboarding-header {
+      padding: 20px;
+    }
+    
+    .onboarding-content {
+      padding: 20px;
+    }
+  }
+}

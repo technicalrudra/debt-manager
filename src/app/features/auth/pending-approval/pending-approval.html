@@ -1,0 +1,21 @@
+<div class="auth-container">
+  <div class="auth-card-container">
+    <mat-card class="auth-card text-center p-4">
+      <div class="pending-icon-wrapper mb-3 mx-auto">
+        <mat-icon class="pending-icon text-warning" style="font-size: 48px; width: 48px; height: 48px;">hourglass_empty</mat-icon>
+      </div>
+      
+      <h2 class="fw-bold mb-2">Account Pending Approval</h2>
+      
+      <p class="text-secondary mb-4">
+        Your account registration has been received, but an administrator needs to approve it before you can access the dashboard.
+        <br><br>
+        Please check back later or contact support if you believe this is an error.
+      </p>
+      
+      <button mat-raised-button color="primary" (click)="logout()" class="px-4">
+        Sign Out
+      </button>
+    </mat-card>
+  </div>
+</div>
