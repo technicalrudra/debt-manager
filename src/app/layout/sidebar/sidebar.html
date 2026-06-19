@@ -1,11 +1,17 @@
 <div class="sidebar-content" [class.is-collapsed]="isCollapsed">
+
   <div>
     <div class="logo-container">
-      <mat-icon class="logo-icon">account_balance</mat-icon>
-      <div class="logo-info" *ngIf="!isCollapsed">
-        <span class="logo-text">Debt Manager</span>
-        <span class="logo-sub">Personal finance</span>
+      <div class="logo-brand">
+        <mat-icon class="logo-icon">account_balance</mat-icon>
+        <div class="logo-info" *ngIf="!isCollapsed">
+          <span class="logo-text">Debt Manager</span>
+          <span class="logo-sub">Personal finance</span>
+        </div>
       </div>
+      <button mat-icon-button class="sidebar-close-btn" *ngIf="isMobile" (click)="close.emit()" aria-label="Close menu">
+        <mat-icon>close</mat-icon>
+      </button>
     </div>
     <mat-nav-list class="nav-list">
       <a mat-list-item *ngFor="let item of navItems()" [routerLink]="item.route" routerLinkActive="active-link" class="nav-item">
@@ -15,7 +21,7 @@
     </mat-nav-list>
   </div>
 
-  <div class="sidebar-footer" *ngIf="!isCollapsed">
+  <div class="sidebar-footer" *ngIf="!isCollapsed && !isMobile">
     <div class="status-card">
       <div class="status-label">Debt-free by</div>
       <div class="status-value">Jun 2029</div>

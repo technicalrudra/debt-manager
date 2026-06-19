@@ -20,6 +20,14 @@ export class Header {
   authService = inject(AuthService);
   private router = inject(Router);
 
+  get greeting(): string {
+    const hour = new Date().getHours();
+    const name = this.authService.currentProfile()?.full_name ?? '';
+    const first = name.split(' ')[0] || 'User';
+    const time = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+    return `${time}, ${first}`;
+  }
+
   onToggle() {
     this.toggleSidebar.emit();
   }

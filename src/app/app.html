@@ -1,1 +1,16 @@
-<router-outlet></router-outlet>
+@if (authService.loading()) {
+  <div class="app-loader">
+    <div class="app-loader-card">
+      <div class="app-loader-brand">
+        <span class="material-icons app-loader-icon">account_balance</span>
+        <span class="app-loader-name">Debt Manager</span>
+      </div>
+      <div class="app-loader-spinner">
+        <div class="spinner-ring"></div>
+      </div>
+      <p class="app-loader-text">Loading your dashboard…</p>
+    </div>
+  </div>
+} @else {
+  <router-outlet></router-outlet>
+}

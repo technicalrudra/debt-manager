@@ -3,22 +3,19 @@
     <button mat-icon-button class="me-2" (click)="onToggle()">
       <mat-icon>menu</mat-icon>
     </button>
-    <div class="search-container d-none d-md-flex flex-grow-1">
-      <mat-icon class="search-icon">search</mat-icon>
-      <input type="text" placeholder="Search debts, payments, goals..." class="search-input">
+    <span class="header-app-name d-flex d-md-none">Debt Manager</span>
+    <div class="header-greeting d-none d-md-flex flex-column">
+      <span class="header-hello">{{ greeting }} 👋</span>
     </div>
   </div>
   
   <div class="header-right">
-    <div class="month-selector">
-      <span>May 2026</span>
-      <mat-icon>keyboard_arrow_down</mat-icon>
-    </div>
+   
 
-    <button mat-icon-button class="header-action">
+    <button mat-icon-button class="header-action hide-on-mobile">
       <mat-icon>dark_mode</mat-icon>
     </button>
-    <button mat-icon-button class="header-action">
+    <button mat-icon-button class="header-action hide-on-mobile">
       <mat-icon>notifications</mat-icon>
       <span class="notification-badge"></span>
     </button>

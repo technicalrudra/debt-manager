@@ -1,15 +1,16 @@
-import { Component, Input, OnInit, computed, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../../core/services/auth.service';
 import { AccessControlService } from '../../core/services/access-control.service';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatListModule, MatIconModule],
+  imports: [CommonModule, RouterModule, MatListModule, MatIconModule, MatButtonModule],
   templateUrl: './sidebar.html',
   styleUrls: ['./sidebar.scss']
 })
@@ -17,6 +18,8 @@ export class Sidebar implements OnInit {
   private authService = inject(AuthService);
   private access = inject(AccessControlService);
   @Input() isCollapsed = false;
+  @Input() isMobile = false;
+  @Output() close = new EventEmitter<void>();
 
   private allNavItems = [
     { key: 'dashboard', label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },

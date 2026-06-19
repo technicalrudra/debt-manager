@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, effect, untracked } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import { AuthService } from './auth.service';
 import { Expense, ExpenseInsert, ExpenseUpdate } from '../models/expense.model';
@@ -12,6 +12,19 @@ export class ExpenseService {
 
   expenses = signal<Expense[]>([]);
   loading = signal(false);
+
+  constructor() {
+    effect(() => {
+      const userId = this.auth.currentUser()?.id;
+      untracked(() => {
+        if (userId) {
+          this.loadExpenses();
+        } else {
+          this.expenses.set([]);
+        }
+      });
+    });
+  }
 
   async loadExpenses(): Promise<void> {
     const userId = this.auth.currentUser()?.id;

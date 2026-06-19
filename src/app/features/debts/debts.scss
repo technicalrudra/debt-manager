@@ -1,4 +1,10 @@
 /* Debt-specific table cell styles */
+
+.clickable-row {
+  cursor: pointer;
+
+  &:hover td { background: #f9fafb; }
+}
 .debt-name {
   font-size: 14px;
   color: #1d2939;

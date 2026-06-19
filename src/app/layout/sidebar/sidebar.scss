@@ -1,0 +1,60 @@
+.sidebar-close-btn {
+  color: rgba(147, 197, 253, 0.7) !important;
+
+  &:hover {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+  }
+}
+
+::ng-deep .nav-item {
+  // Force Angular Material list-item icon color on dark sidebar
+  .mat-mdc-list-item-icon,
+  .mat-mdc-list-item-icon .mat-icon,
+  .mat-mdc-list-item-icon mat-icon {
+    color: rgba(147, 197, 253, 0.75) !important;
+    font-size: 20px !important;
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  // MDC label text
+  .mdc-list-item__primary-text {
+    color: rgba(186, 213, 255, 0.85) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 14px !important;
+  }
+
+  // Hover state
+  &:hover {
+    .mat-mdc-list-item-icon,
+    .mat-mdc-list-item-icon mat-icon {
+      color: #93c5fd !important;
+    }
+
+    .mdc-list-item__primary-text {
+      color: #ffffff !important;
+    }
+  }
+
+  // Active (routerLinkActive) state
+  &.active-link {
+    background: rgba(255, 255, 255, 0.12) !important;
+
+    .mat-mdc-list-item-icon,
+    .mat-mdc-list-item-icon mat-icon {
+      color: #93c5fd !important;
+    }
+
+    .mdc-list-item__primary-text {
+      color: #ffffff !important;
+      font-weight: 600 !important;
+    }
+  }
+
+  // Remove default MDC ripple/state-layer on dark bg
+  .mdc-list-item__ripple,
+  .mat-mdc-list-item-interactive::before {
+    background: rgba(255, 255, 255, 0.06) !important;
+  }
+}

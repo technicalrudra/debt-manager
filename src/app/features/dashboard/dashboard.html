@@ -1,174 +1,119 @@
 <div class="container-fluid py-2">
-  <!-- Header Section -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div class="greeting">
-      <h1 class="welcome-text mb-1">Good morning, {{user().name}} 👋</h1>
-      <p class="text-secondary subtitle mb-0">Here's your financial snapshot for May 2026.</p>
-    </div>
-    <div class="header-actions d-none d-md-flex">
-      <button mat-stroked-button class="action-btn-outline me-2" (click)="openAddExpense()">
-        <mat-icon>add</mat-icon> Add Expense
-      </button>
-      <button mat-raised-button color="primary" class="action-btn-filled" (click)="openRecordPayment()">
-        <mat-icon>receipt_long</mat-icon> Record Payment
-      </button>
-    </div>
+
+ <div class="d-flex justify-content-between mb-3 d-none d-md-flex">
+  <h3>Here's your financial snapshot</h3>
+  <div class="d-flex gap-2">
+    <button mat-stroked-button class="action-btn-outline me-2" (click)="openAddExpense()">
+      <svg lucidePlus [size]="16" [strokeWidth]="2"></svg> Add Expense
+    </button>
+    <button mat-raised-button color="primary" class="action-btn-filled" (click)="openRecordPayment()">
+      <svg lucideScrollText [size]="16" [strokeWidth]="2"></svg> Record Payment
+    </button>
   </div>
+ </div>
 
-  <!-- KPI Grid -->
-  <div class="row g-3 mb-4">
-    <div class="col-12 col-sm-6 col-md-4 col-xl-4">
-      <mat-card class="kpi-card h-100">
-        <div class="d-flex justify-content-between mb-3">
-          <div class="kpi-icon-box bg-red-soft">
-            <mat-icon class="text-danger">account_balance_wallet</mat-icon>
+  <!-- KPI Grid (compact) -->
+  <div class="row g-2 mb-4">
+
+    <div class="col-6 col-md-4 col-lg-2">
+      <div class="kpic">
+        <div class="kpic-left">
+          <div class="kpic-icon bg-red-soft"><svg lucideWallet [size]="18" [strokeWidth]="1.75" class="text-danger"></svg></div>
+          <div class="kpic-body">
+            <div class="kpic-label">Total Debt</div>
+            <div class="kpic-value">{{ kpis().totalDebt > 0 ? ('₹' + (kpis().totalDebt | number)) : '—' }}</div>
           </div>
-          @if (kpis().totalDebt > 0) {
-            <span class="kpi-badge text-danger">-3.2%</span>
-          }
         </div>
-        <div class="kpi-content">
-          <div class="kpi-label">Total Debt Outstanding</div>
-          @if (kpis().totalDebt > 0) {
-            <div class="kpi-value">₹{{kpis().totalDebt | number}}</div>
-          } @else {
-            <div class="kpi-no-data">
-              <div class="kpi-no-data-dash">—</div>
-              <div class="kpi-no-data-text">No debts recorded</div>
-            </div>
-          }
-        </div>
-      </mat-card>
+        @if (kpis().totalDebt > 0) {
+          <span class="kpic-badge danger">-3.2%</span>
+        }
+      </div>
     </div>
 
-    <div class="col-12 col-sm-6 col-md-4 col-xl-4">
-      <mat-card class="kpi-card h-100">
-        <div class="d-flex justify-content-between mb-3">
-          <div class="kpi-icon-box bg-orange-soft">
-            <mat-icon class="text-warning">group</mat-icon>
+    <div class="col-6 col-md-4 col-lg-2">
+      <div class="kpic">
+        <div class="kpic-left">
+          <div class="kpic-icon bg-orange-soft"><svg lucideUsers [size]="18" [strokeWidth]="1.75" class="text-warning"></svg></div>
+          <div class="kpic-body">
+            <div class="kpic-label">Friend Debt</div>
+            <div class="kpic-value">{{ kpis().friendDebt > 0 ? ('₹' + (kpis().friendDebt | number)) : '—' }}</div>
           </div>
-          @if (kpis().friendDebt > 0) {
-            <span class="kpi-badge text-danger">-12.5%</span>
-          }
         </div>
-        <div class="kpi-content">
-          <div class="kpi-label">Friend Debt Remaining</div>
-          @if (kpis().friendDebt > 0) {
-            <div class="kpi-value">₹{{kpis().friendDebt | number}}</div>
-          } @else {
-            <div class="kpi-no-data">
-              <div class="kpi-no-data-dash">—</div>
-              <div class="kpi-no-data-text">No friend debts</div>
-            </div>
-          }
-        </div>
-      </mat-card>
+        @if (kpis().friendDebt > 0) {
+          <span class="kpic-badge danger">-12.5%</span>
+        }
+      </div>
     </div>
 
-    <div class="col-12 col-sm-6 col-md-4 col-xl-4">
-      <mat-card class="kpi-card h-100">
-        <div class="d-flex justify-content-between mb-3">
-          <div class="kpi-icon-box bg-green-soft">
-            <mat-icon class="text-success">trending_up</mat-icon>
+    <div class="col-6 col-md-4 col-lg-2">
+      <div class="kpic">
+        <div class="kpic-left">
+          <div class="kpic-icon bg-green-soft"><svg lucideTrendingUp [size]="18" [strokeWidth]="1.75" class="text-success"></svg></div>
+          <div class="kpic-body">
+            <div class="kpic-label">Monthly Income</div>
+            <div class="kpic-value">{{ kpis().monthlyIncome > 0 ? ('₹' + (kpis().monthlyIncome | number)) : '—' }}</div>
           </div>
-          @if (kpis().monthlyIncome > 0) {
-            <span class="kpi-badge text-success">+4.0%</span>
-          }
         </div>
-        <div class="kpi-content">
-          <div class="kpi-label">Monthly Income</div>
-          @if (kpis().monthlyIncome > 0) {
-            <div class="kpi-value">₹{{kpis().monthlyIncome | number}}</div>
-          } @else {
-            <div class="kpi-no-data">
-              <div class="kpi-no-data-dash">—</div>
-              <div class="kpi-no-data-text">No income sources added</div>
-            </div>
-          }
-        </div>
-      </mat-card>
+        @if (kpis().monthlyIncome > 0) {
+          <span class="kpic-badge success">+4.0%</span>
+        }
+      </div>
     </div>
 
-    <div class="col-12 col-sm-6 col-md-4 col-xl-4">
-      <mat-card class="kpi-card h-100">
-        <div class="d-flex justify-content-between mb-3">
-          <div class="kpi-icon-box bg-blue-soft">
-            <mat-icon class="text-primary">receipt</mat-icon>
+    <div class="col-6 col-md-4 col-lg-2">
+      <div class="kpic">
+        <div class="kpic-left">
+          <div class="kpic-icon bg-blue-soft"><svg lucideReceipt [size]="18" [strokeWidth]="1.75" class="text-primary"></svg></div>
+          <div class="kpic-body">
+            <div class="kpic-label">Expenses</div>
+            <div class="kpic-value">{{ kpis().monthlyExpenses > 0 ? ('₹' + (kpis().monthlyExpenses | number)) : '—' }}</div>
           </div>
-          @if (kpis().monthlyExpenses > 0) {
-            <span class="kpi-badge text-danger">-1.1%</span>
-          }
         </div>
-        <div class="kpi-content">
-          <div class="kpi-label">Monthly Expenses</div>
-          @if (kpis().monthlyExpenses > 0) {
-            <div class="kpi-value">₹{{kpis().monthlyExpenses | number}}</div>
-          } @else {
-            <div class="kpi-no-data">
-              <div class="kpi-no-data-dash">—</div>
-              <div class="kpi-no-data-text">No expenses logged</div>
-            </div>
-          }
-        </div>
-      </mat-card>
+        @if (kpis().monthlyExpenses > 0) {
+          <span class="kpic-badge danger">-1.1%</span>
+        }
+      </div>
     </div>
 
-    <div class="col-12 col-sm-6 col-md-4 col-xl-4">
-      <mat-card class="kpi-card h-100">
-        <div class="d-flex justify-content-between mb-3">
-          <div class="kpi-icon-box bg-indigo-soft">
-            <mat-icon class="text-primary">event_repeat</mat-icon>
+    <div class="col-6 col-md-4 col-lg-2">
+      <div class="kpic">
+        <div class="kpic-left">
+          <div class="kpic-icon bg-indigo-soft"><svg lucideCalendarClock [size]="18" [strokeWidth]="1.75" class="text-primary"></svg></div>
+          <div class="kpic-body">
+            <div class="kpic-label">Monthly EMIs</div>
+            <div class="kpic-value">{{ kpis().monthlyEmis > 0 ? ('₹' + (kpis().monthlyEmis | number)) : '—' }}</div>
           </div>
-          @if (kpis().monthlyEmis > 0) {
-            <span class="kpi-badge text-secondary">stable</span>
-          }
         </div>
-        <div class="kpi-content">
-          <div class="kpi-label">Monthly EMIs</div>
-          @if (kpis().monthlyEmis > 0) {
-            <div class="kpi-value">₹{{kpis().monthlyEmis | number}}</div>
-          } @else {
-            <div class="kpi-no-data">
-              <div class="kpi-no-data-dash">—</div>
-              <div class="kpi-no-data-text">No active EMIs</div>
-            </div>
-          }
-        </div>
-      </mat-card>
+        @if (kpis().monthlyEmis > 0) {
+          <span class="kpic-badge neutral">stable</span>
+        }
+      </div>
     </div>
 
-    <div class="col-12 col-sm-6 col-md-4 col-xl-4">
-      <mat-card class="kpi-card h-100">
-        <div class="d-flex justify-content-between mb-3">
-          <div class="kpi-icon-box bg-teal-soft">
-            <mat-icon class="text-success">savings</mat-icon>
+    <div class="col-6 col-md-4 col-lg-2">
+      <div class="kpic">
+        <div class="kpic-left">
+          <div class="kpic-icon bg-teal-soft"><svg lucidePiggyBank [size]="18" [strokeWidth]="1.75" class="text-success"></svg></div>
+          <div class="kpic-body">
+            <div class="kpic-label">Surplus</div>
+            <div class="kpic-value">{{ kpis().monthlyIncome > 0 ? ('₹' + (kpis().availableSurplus | number)) : '—' }}</div>
           </div>
-          @if (kpis().monthlyIncome > 0) {
-            <span class="kpi-badge text-success">+8.4%</span>
-          }
         </div>
-        <div class="kpi-content">
-          <div class="kpi-label">Available Surplus</div>
-          @if (kpis().monthlyIncome > 0) {
-            <div class="kpi-value">₹{{kpis().availableSurplus | number}}</div>
-          } @else {
-            <div class="kpi-no-data">
-              <div class="kpi-no-data-dash">—</div>
-              <div class="kpi-no-data-text">Add income to calculate</div>
-            </div>
-          }
-        </div>
-      </mat-card>
+        @if (kpis().monthlyIncome > 0) {
+          <span class="kpic-badge success">+8.4%</span>
+        }
+      </div>
     </div>
+
   </div>
 
   <!-- Charts Section -->
   <div class="row g-3 mb-4">
     <div class="col-12 col-lg-5">
       <mat-card class="chart-card h-100">
-        <mat-card-header>
-          <mat-card-title>Debt Breakdown</mat-card-title>
-        </mat-card-header>
+        <div class="dash-card-header">
+          <span class="dash-card-title">Debt Breakdown</span>
+        </div>
         <mat-card-content class="d-flex flex-column flex-sm-row">
           @if (debtService.debts().length > 0) {
             <div class="donut-container mx-auto mx-sm-0">
@@ -200,11 +145,12 @@
 
     <div class="col-12 col-lg-7">
       <mat-card class="chart-card h-100">
-        <mat-card-header class="d-flex justify-content-between align-items-center">
-          <mat-card-title>Debt Payoff Trend</mat-card-title>
-          <div class="chart-extra text-secondary"><mat-icon class="inline-icon">trending_down</mat-icon> ₹1.94L paid
-            down</div>
-        </mat-card-header>
+        <div class="dash-card-header">
+          <span class="dash-card-title">Debt Payoff Trend</span>
+          <span class="dash-card-extra">
+            <svg lucideTrendingDown [size]="14" [strokeWidth]="2" class="me-1"></svg> ₹1.94L paid down
+          </span>
+        </div>
         <mat-card-content class="line-chart-container">
           @if (debtService.debts().length > 0) {
             <canvas baseChart [data]="lineChartData()" [options]="lineChartOptions" type="line">
@@ -225,9 +171,9 @@
   <div class="row g-3 mb-4">
     <div class="col-12 col-xl-8">
       <mat-card class="grid-card h-100">
-        <mat-card-header>
-          <mat-card-title>Income vs Expenses</mat-card-title>
-        </mat-card-header>
+        <div class="dash-card-header">
+          <span class="dash-card-title">Income vs Expenses</span>
+        </div>
         <mat-card-content class="bar-chart-container">
           @if (kpis().monthlyIncome > 0 || kpis().monthlyExpenses > 0) {
             <canvas baseChart [data]="barChartData()" [options]="barChartOptions" type="bar">
@@ -245,17 +191,19 @@
 
     <div class="col-12 col-xl-4">
       <mat-card class="grid-card h-100">
-        <mat-card-header>
-          <mat-card-title>Upcoming Due Dates</mat-card-title>
-        </mat-card-header>
+        <div class="dash-card-header">
+          <span class="dash-card-title">Upcoming Due Dates</span>
+        </div>
         <mat-card-content>
           @if (upcomingDueDates().length > 0) {
             @for (item of upcomingDueDates(); track item.name) {
               <div class="list-item d-flex justify-content-between">
                 <div class="item-info">
                   <div class="item-title">{{item.name}}</div>
-                  <div class="item-subtext d-flex align-items-center"><mat-icon class="inline-icon">schedule</mat-icon>
-                    {{item.date}}</div>
+                  <div class="item-subtext d-flex align-items-center gap-1">
+                    <svg lucideClock [size]="12" [strokeWidth]="2"></svg>
+                    {{item.date}}
+                  </div>
                 </div>
                 <div class="item-action text-end">
                   <div class="item-amount">₹{{item.amount | number}}</div>
@@ -265,7 +213,7 @@
             }
           } @else {
             <div class="card-empty-state">
-              <mat-icon>event_available</mat-icon>
+              <svg lucideCalendarCheck [size]="36" [strokeWidth]="1.5"></svg>
               <p>No upcoming due dates</p>
             </div>
           }
@@ -276,122 +224,156 @@
 
   <!-- Bottom Row -->
   <div class="row g-3 mb-4">
+
+    <!-- Recent Payments -->
     <div class="col-12 col-md-6 col-lg-4">
-      <mat-card class="grid-card h-100">
-        <mat-card-header>
-          <mat-card-title>Recent Payments</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
+      <mat-card class="grid-card h-100 bottom-card">
+        <div class="bottom-card-header">
+          <span class="bottom-card-title">Recent Payments</span>
+        </div>
+        <div class="bottom-card-body">
           @if (recentPayments().length > 0) {
             @for (item of recentPayments(); track item.name) {
-              <div class="list-item d-flex justify-content-between align-items-center">
-                <div class="item-info d-flex align-items-center">
-                  <div class="icon-circle bg-green-soft me-3">
-                    <mat-icon class="text-success small-icon">check</mat-icon>
-                  </div>
-                  <div>
-                    <div class="item-title">{{item.name}}</div>
-                    <div class="item-subtext">{{item.method}} - {{item.date}}</div>
-                  </div>
+              <div class="payment-row">
+                <div class="payment-icon">
+                  <svg lucideCircleCheck [size]="18" [strokeWidth]="1.75"></svg>
                 </div>
-                <div class="item-amount">₹{{item.amount | number}}</div>
+                <div class="payment-info">
+                  <div class="payment-name">{{ item.name }}</div>
+                  <div class="payment-meta">{{ item.method }} &middot; {{ item.date }}</div>
+                </div>
+                <div class="payment-amount">₹{{ item.amount | number }}</div>
               </div>
             }
           } @else {
             <div class="card-empty-state">
-              <mat-icon>receipt_long</mat-icon>
+              <svg lucideScrollText [size]="36" [strokeWidth]="1.5"></svg>
               <p>No payments recorded yet</p>
             </div>
           }
-        </mat-card-content>
+        </div>
       </mat-card>
     </div>
 
+    <!-- Priority Actions -->
     <div class="col-12 col-md-6 col-lg-4">
-      <mat-card class="grid-card h-100">
-        <mat-card-header>
-          <mat-card-title>Priority Actions</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          @for (action of priorityActions; track action.title) {
-            <div class="list-item d-flex align-items-start">
-              <div class="icon-circle bg-{{action.color}}-soft me-3 mt-1">
-                <mat-icon [color]="action.color" class="small-icon">{{action.icon}}</mat-icon>
+      <mat-card class="grid-card h-100 bottom-card">
+        <div class="bottom-card-header">
+          <span class="bottom-card-title">Priority Actions</span>
+        </div>
+        <div class="bottom-card-body">
+          @for (action of priorityActions(); track action.title) {
+            <div class="priority-item priority-{{ action.color }}">
+              <div class="priority-accent"></div>
+              <div class="priority-icon">
+                @if (action.icon === 'alert') {
+                  <svg lucideAlertTriangle [size]="18" [strokeWidth]="1.75"></svg>
+                } @else if (action.icon === 'clock') {
+                  <svg lucideClock [size]="18" [strokeWidth]="1.75"></svg>
+                } @else {
+                  <svg lucideSparkles [size]="18" [strokeWidth]="1.75"></svg>
+                }
               </div>
-              <div>
-                <div class="item-title">{{action.title}}</div>
-                <div class="item-subtext">{{action.description}}</div>
+              <div class="priority-text">
+                <div class="priority-title">{{ action.title }}</div>
+                <div class="priority-desc">{{ action.description }}</div>
               </div>
             </div>
           }
-        </mat-card-content>
+        </div>
       </mat-card>
     </div>
 
+    <!-- Quick Actions -->
     <div class="col-12 col-md-12 col-lg-4">
-      <mat-card class="grid-card h-100">
-        <mat-card-header>
-          <mat-card-title>Quick Actions</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="row g-2">
-            <div class="col-6">
-              <button class="qa-btn w-100 h-100">
-                <mat-icon>add</mat-icon>
-                <span>Add Debt</span>
-              </button>
-            </div>
-            <div class="col-6">
-              <button class="qa-btn w-100 h-100" (click)="openRecordPayment()">
-                <mat-icon>receipt_long</mat-icon>
-                <span>Record Payment</span>
-              </button>
-            </div>
-            <div class="col-6">
-              <button class="qa-btn w-100 h-100" (click)="openAddExpense()">
-                <mat-icon>add_shopping_cart</mat-icon>
-                <span>Add Expense</span>
-              </button>
-            </div>
-            <div class="col-6">
-              <button class="qa-btn w-100 h-100">
-                <mat-icon>payments</mat-icon>
-                <span>Update Income</span>
-              </button>
-            </div>
+      <mat-card class="grid-card h-100 bottom-card">
+        <div class="bottom-card-header">
+          <span class="bottom-card-title">Quick Actions</span>
+        </div>
+        <div class="bottom-card-body">
+          <div class="qa-grid">
+            <button class="qa-tile" (click)="openAddDebt()">
+              <div class="qa-icon-wrap qa-indigo">
+                <svg lucideCreditCard [size]="22" [strokeWidth]="1.75"></svg>
+              </div>
+              <span>Add Debt</span>
+            </button>
+            <button class="qa-tile" (click)="openRecordPayment()">
+              <div class="qa-icon-wrap qa-green">
+                <svg lucideReceipt [size]="22" [strokeWidth]="1.75"></svg>
+              </div>
+              <span>Record Payment</span>
+            </button>
+            <button class="qa-tile" (click)="openAddExpense()">
+              <div class="qa-icon-wrap qa-orange">
+                <svg lucideShoppingCart [size]="22" [strokeWidth]="1.75"></svg>
+              </div>
+              <span>Add Expense</span>
+            </button>
+            <button class="qa-tile">
+              <div class="qa-icon-wrap qa-blue">
+                <svg lucideBanknote [size]="22" [strokeWidth]="1.75"></svg>
+              </div>
+              <span>Update Income</span>
+            </button>
           </div>
-        </mat-card-content>
+        </div>
       </mat-card>
     </div>
+
   </div>
 
   <!-- Debt Progress Section -->
-  <mat-card class="progress-section-card">
-    <mat-card-header>
-      <mat-card-title>Debt Progress</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      @if (debtProgress().length > 0) {
-        <div class="row">
-          @for (debt of debtProgress(); track debt.name) {
-            <div class="col-12 col-md-6 mb-3">
-              <div class="progress-item px-2">
-                <div class="d-flex justify-content-between mb-1">
-                  <span class="progress-name">{{debt.name}}</span>
-                  <span class="progress-values text-secondary">₹{{debt.current | number}} / ₹{{debt.target | number}}</span>
-                </div>
-                <mat-progress-bar mode="determinate" [value]="(debt.current / debt.target) * 100"></mat-progress-bar>
+  <mat-card class="grid-card debt-progress-card mb-4">
+    <div class="bottom-card-header">
+      <span class="bottom-card-title">Debt Progress</span>
+      <span class="dash-card-extra">{{ debtProgress().length }} active debt{{ debtProgress().length !== 1 ? 's' : '' }}</span>
+    </div>
+
+    @if (debtProgress().length > 0) {
+      <div class="dp-grid">
+        @for (debt of debtProgress(); track debt.name) {
+          <div class="dp-card">
+
+            <!-- Header -->
+            <div class="dp-card-top">
+              <div class="dp-name-wrap">
+                <span class="dp-name">{{ debt.name }}</span>
+                <span class="dp-type-badge">{{ debt.type }}</span>
+              </div>
+              <div class="dp-pct" [style.color]="debt.barColor">{{ debt.remainingPct }}% left</div>
+            </div>
+
+            <!-- Balance -->
+            <div class="dp-balance">₹{{ debt.current | number }}</div>
+            <div class="dp-of">of ₹{{ debt.target | number }} original</div>
+
+            <!-- Progress bar -->
+            <div class="dp-bar-track">
+              <div class="dp-bar-fill" [style.width.%]="debt.remainingPct" [style.background]="debt.barColor"></div>
+            </div>
+
+            <!-- Footer stats -->
+            <div class="dp-stats">
+              <div class="dp-stat">
+                <span class="dp-stat-label">Paid off</span>
+                <span class="dp-stat-value text-success">₹{{ debt.paid | number }}</span>
+              </div>
+              <div class="dp-stat">
+                <span class="dp-stat-label">Monthly EMI</span>
+                <span class="dp-stat-value">₹{{ debt.emi | number }}</span>
               </div>
             </div>
-          }
-        </div>
-      } @else {
-        <div class="card-empty-state">
-          <mat-icon>account_balance_wallet</mat-icon>
-          <p>No debts added yet. Start tracking your repayment progress by adding a debt.</p>
-        </div>
-      }
-    </mat-card-content>
+
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="card-empty-state" style="padding: 48px 16px;">
+        <svg lucideWallet [size]="40" [strokeWidth]="1.5"></svg>
+        <p>No debts added yet. Start tracking your repayment progress by adding a debt.</p>
+      </div>
+    }
   </mat-card>
 </div>
 
@@ -401,7 +383,7 @@
     <div class="modal-header">
       <h2>Add Expense</h2>
       <button type="button" class="modal-close-btn" mat-dialog-close>
-        <mat-icon>close</mat-icon>
+        <svg lucideX [size]="20" [strokeWidth]="2"></svg>
       </button>
     </div>
     <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">

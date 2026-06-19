@@ -1,8 +1,8 @@
 import { Component, OnInit, TemplateRef, ViewChild, inject, computed } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -11,6 +11,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { BaseChartDirective } from 'ng2-charts';
+import {
+  LucideWallet, LucideUsers, LucideTrendingUp, LucideTrendingDown,
+  LucideReceipt, LucideScrollText, LucideCalendarClock, LucidePiggyBank,
+  LucideClock, LucideCalendarCheck, LucideCircleCheck,
+  LucideCreditCard, LucideShoppingCart, LucideBanknote, LucidePlus,
+  LucideX, LucideAlertTriangle, LucideSparkles
+} from '@lucide/angular';
 import { ChartConfiguration, ChartType, ChartOptions } from 'chart.js';
 import { UserDataService } from '../../core/services/user-data.service';
 import { DebtService } from '../../core/services/debt.service';
@@ -31,7 +38,6 @@ Chart.register(...registerables);
     CommonModule,
     ReactiveFormsModule,
     MatCardModule,
-    MatIconModule,
     MatButtonModule,
     MatChipsModule,
     MatProgressBarModule,
@@ -40,7 +46,12 @@ Chart.register(...registerables);
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    EmptyState
+    EmptyState,
+    LucideWallet, LucideUsers, LucideTrendingUp, LucideTrendingDown,
+    LucideReceipt, LucideScrollText, LucideCalendarClock, LucidePiggyBank,
+    LucideClock, LucideCalendarCheck, LucideCircleCheck,
+    LucideCreditCard, LucideShoppingCart, LucideBanknote, LucidePlus,
+    LucideX, LucideAlertTriangle, LucideSparkles
   ],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.scss']
@@ -53,6 +64,7 @@ export class Dashboard implements OnInit {
   authService = inject(AuthService);
   private dialog = inject(MatDialog);
   private fb = inject(FormBuilder);
+  private router = inject(Router);
 
   @ViewChild('addExpenseDialog') addExpenseDialogTemp!: TemplateRef<any>;
 
@@ -114,19 +126,88 @@ export class Dashboard implements OnInit {
     }));
   });
 
-  priorityActions = [
-    { title: 'Credit card APR is 36%', description: 'Pay ₹15K extra this month to save ₹1.8K in interest.', icon: 'report_problem', color: 'warn' },
-    { title: 'Card due in 4 days', description: 'Schedule auto-pay to avoid late fees.', icon: 'schedule', color: 'accent' },
-    { title: 'Surplus available', description: 'Allocate ₹15K to the highest-rate debt.', icon: 'auto_awesome', color: 'primary' }
-  ];
+  priorityActions = computed(() => {
+    const debts = this.debtService.debts().filter(d => Number(d.current_balance) > 0);
+    const today = new Date();
+    const currentDay = today.getDate();
+    const { monthlyIncome, availableSurplus } = this.kpis();
+    const actions: { title: string; description: string; icon: string; color: string }[] = [];
+
+    // High-interest debt alert
+    const highRateDebt = [...debts].sort((a, b) => Number(b.interest_rate) - Number(a.interest_rate))[0];
+    if (highRateDebt && Number(highRateDebt.interest_rate) > 15) {
+      const monthlySaving = Math.round(Number(highRateDebt.current_balance) * Number(highRateDebt.interest_rate) / 1200 * 0.1);
+      actions.push({
+        title: `${highRateDebt.name} at ${highRateDebt.interest_rate}% APR`,
+        description: `Highest-rate debt. Paying extra saves ~₹${monthlySaving.toLocaleString('en-IN')}/mo in interest.`,
+        icon: 'alert',
+        color: 'warn'
+      });
+    }
+
+    // Due soon within 5 days
+    const dueSoonList = debts
+      .map(d => ({ ...d, diff: Number(d.due_date) - currentDay }))
+      .filter(d => d.diff >= 0 && d.diff <= 5)
+      .sort((a, b) => a.diff - b.diff);
+    if (dueSoonList.length > 0) {
+      const d = dueSoonList[0];
+      const label = d.diff === 0 ? 'today' : `in ${d.diff} day${d.diff === 1 ? '' : 's'}`;
+      actions.push({
+        title: `${d.name} EMI due ${label}`,
+        description: `₹${Number(d.emi).toLocaleString('en-IN')} payment due. Schedule to avoid late fees.`,
+        icon: 'clock',
+        color: 'accent'
+      });
+    }
+
+    // Budget deficit warning
+    if (monthlyIncome > 0 && availableSurplus < 0) {
+      actions.push({
+        title: 'Monthly budget in deficit',
+        description: `Overspending by ₹${Math.abs(availableSurplus).toLocaleString('en-IN')}. Review expenses.`,
+        icon: 'alert',
+        color: 'warn'
+      });
+    }
+
+    // Surplus — encourage extra payment
+    if (availableSurplus > 5000 && actions.length < 3) {
+      const topDebt = debts.find(d => d.priority === 'High')
+        ?? [...debts].sort((a, b) => Number(b.interest_rate) - Number(a.interest_rate))[0];
+      actions.push({
+        title: `₹${availableSurplus.toLocaleString('en-IN')} surplus this month`,
+        description: topDebt
+          ? `Allocate extra toward ${topDebt.name} to pay off faster.`
+          : 'Consider making an extra debt payment this month.',
+        icon: 'sparkles',
+        color: 'primary'
+      });
+    }
+
+    // Fallback — all good
+    if (actions.length === 0) {
+      actions.push({
+        title: 'Finances on track',
+        description: 'No urgent actions needed. Keep up the good work!',
+        icon: 'sparkles',
+        color: 'primary'
+      });
+    }
+
+    return actions.slice(0, 3);
+  });
 
   debtProgress = computed(() => {
-    return this.debtService.debts().map(d => ({
-      name: d.name,
-      current: Number(d.current_balance),
-      target: Number(d.original_amount),
-      color: '#4f46e5'
-    }));
+    return this.debtService.debts().map(d => {
+      const current = Number(d.current_balance);
+      const target = Number(d.original_amount);
+      const paid = target - current;
+      const paidPct = target > 0 ? Math.round((paid / target) * 100) : 0;
+      const remainingPct = 100 - paidPct;
+      const barColor = remainingPct > 75 ? '#ef4444' : remainingPct > 40 ? '#f59e0b' : '#10b981';
+      return { name: d.name, type: d.type || 'Loan', current, target, paid, paidPct, remainingPct, barColor, emi: Number(d.emi) };
+    });
   });
 
   // Donut Chart
@@ -242,6 +323,10 @@ export class Dashboard implements OnInit {
 
   private localDateString(d = new Date()): string {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  openAddDebt() {
+    this.router.navigate(['/debts']);
   }
 
   openAddExpense() {

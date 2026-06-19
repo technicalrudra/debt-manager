@@ -1,5 +1,489 @@
 /* Styles migrated to global styles.scss */
 
+// ── Debt Progress Cards ───────────────────────────────────
+.debt-progress-card {
+  padding: 0 !important;
+  overflow: hidden;
+
+  .bottom-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid #f2f4f7;
+  }
+
+  .dp-subtitle {
+    font-size: 12px;
+    color: #98a2b3;
+    font-weight: 500;
+  }
+}
+
+.dp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  padding: 16px 20px 20px;
+}
+
+.dp-card {
+  background: #fafafa;
+  border: 1px solid #f2f4f7;
+  border-radius: 14px;
+  padding: 16px;
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    background: #fff;
+  }
+
+  .dp-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 10px;
+
+    .dp-name-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .dp-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1d2939;
+    }
+
+    .dp-type-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      color: #6366f1;
+      background: rgba(99, 102, 241, 0.08);
+      padding: 2px 8px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      width: fit-content;
+    }
+
+    .dp-pct {
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+  }
+
+  .dp-balance {
+    font-size: 22px;
+    font-weight: 800;
+    color: #1d2939;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+
+  .dp-of {
+    font-size: 11px;
+    color: #98a2b3;
+    margin-bottom: 12px;
+  }
+
+  .dp-bar-track {
+    height: 6px;
+    background: #f2f4f7;
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 14px;
+
+    .dp-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.6s ease;
+    }
+  }
+
+  .dp-stats {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 10px;
+    border-top: 1px solid #f2f4f7;
+
+    .dp-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      .dp-stat-label {
+        font-size: 10px;
+        color: #98a2b3;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 600;
+      }
+
+      .dp-stat-value {
+        font-size: 13px;
+        font-weight: 700;
+        color: #1d2939;
+
+        &.text-success { color: #10b981; }
+      }
+    }
+  }
+}
+
+// ── Compact KPI Cards ─────────────────────────────────────
+.kpic {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border: 1px solid #eaecf0;
+  border-radius: 14px;
+  padding: 14px 14px;
+  gap: 8px;
+  transition: box-shadow 0.2s, transform 0.2s;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transform: translateY(-1px);
+  }
+
+  .kpic-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .kpic-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    svg {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  .kpic-body {
+    min-width: 0;
+
+    .kpic-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: #98a2b3;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .kpic-value {
+      font-size: 16px;
+      font-weight: 800;
+      color: #1d2939;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+  }
+
+  .kpic-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 7px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    &.danger  { background: rgba(239,68,68,0.1);  color: #ef4444; }
+    &.success { background: rgba(16,185,129,0.1); color: #10b981; }
+    &.neutral { background: rgba(100,116,139,0.1); color: #64748b; }
+  }
+}
+
+// ── Universal card header title & subtitle (shared) ──────
+.bottom-card-title,
+.dash-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1d2939;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.dash-card-extra {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #98a2b3;
+  font-weight: 500;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+// ── dash-card-header: for chart-card / grid-card (padding: 20px 24px)
+// Uses negative margins to break out of card padding → full-width border
+.dash-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: -20px -24px 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f2f4f7;
+}
+
+// ── Bottom Row Cards ─────────────────────────────────────
+.bottom-card {
+  padding: 0 !important;
+  overflow: hidden;
+
+  .bottom-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid #f2f4f7;
+  }
+
+  .bottom-card-body {
+    padding: 8px 0;
+  }
+}
+
+// ── Recent Payments ───────────────────────────────────────
+.payment-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  transition: background 0.15s;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid #f9fafb;
+  }
+
+  &:hover {
+    background: #f9fafb;
+  }
+
+  .payment-icon {
+    width: 36px;
+    height: 36px;
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    svg {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #10b981;
+    }
+  }
+
+  .payment-info {
+    flex: 1;
+    min-width: 0;
+
+    .payment-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1d2939;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .payment-meta {
+      font-size: 11px;
+      color: #98a2b3;
+      margin-top: 2px;
+    }
+  }
+
+  .payment-amount {
+    font-size: 14px;
+    font-weight: 700;
+    color: #10b981;
+    white-space: nowrap;
+  }
+}
+
+// ── Priority Actions ──────────────────────────────────────
+.priority-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 20px;
+  position: relative;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid #f9fafb;
+  }
+
+  .priority-accent {
+    position: absolute;
+    left: 0;
+    top: 10px;
+    bottom: 10px;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+  }
+
+  .priority-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    svg {
+      font-size: 17px;
+      width: 17px;
+      height: 17px;
+    }
+  }
+
+  .priority-text {
+    flex: 1;
+
+    .priority-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1d2939;
+      margin-bottom: 2px;
+    }
+
+    .priority-desc {
+      font-size: 12px;
+      color: #667085;
+      line-height: 1.5;
+    }
+  }
+
+  // Color variants
+  &.priority-warn {
+    .priority-accent { background: #ef4444; }
+    .priority-icon {
+      background: rgba(239, 68, 68, 0.1);
+      svg { color: #ef4444; }
+    }
+  }
+
+  &.priority-accent {
+    .priority-accent { background: #f59e0b; }
+    .priority-icon {
+      background: rgba(245, 158, 11, 0.1);
+      svg { color: #f59e0b; }
+    }
+  }
+
+  &.priority-primary {
+    .priority-accent { background: #4f46e5; }
+    .priority-icon {
+      background: rgba(79, 70, 229, 0.1);
+      svg { color: #4f46e5; }
+    }
+  }
+}
+
+// ── Quick Actions Grid ────────────────────────────────────
+.qa-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 12px 16px 16px;
+
+  .qa-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 12px;
+    border: 1px solid #eaecf0;
+    border-radius: 12px;
+    background: #fafafa;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 12px;
+    font-weight: 600;
+    color: #344054;
+
+    &:hover {
+      border-color: #d0d5dd;
+      background: #ffffff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    span {
+      text-align: center;
+      line-height: 1.3;
+    }
+  }
+
+  .qa-icon-wrap {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    &.qa-indigo {
+      background: rgba(79, 70, 229, 0.1);
+      svg { color: #4f46e5; }
+    }
+
+    &.qa-green {
+      background: rgba(16, 185, 129, 0.1);
+      svg { color: #10b981; }
+    }
+
+    &.qa-orange {
+      background: rgba(245, 158, 11, 0.1);
+      svg { color: #f59e0b; }
+    }
+
+    &.qa-blue {
+      background: rgba(14, 165, 233, 0.1);
+      svg { color: #0ea5e9; }
+    }
+  }
+}
+
 // Compact empty state inside KPI cards
 .kpi-no-data {
   .kpi-no-data-dash {
@@ -25,10 +509,7 @@
   padding: 2.5rem 1rem;
   text-align: center;
 
-  mat-icon {
-    font-size: 2.5rem;
-    width: 2.5rem;
-    height: 2.5rem;
+  svg {
     color: #94a3b8;
     margin-bottom: 0.75rem;
   }
@@ -39,5 +520,50 @@
     margin: 0;
     max-width: 220px;
     line-height: 1.5;
+  }
+}
+
+
+// ── Mobile KPI card fixes (<768px) ──────────────────────
+@media (max-width: 767px) {
+  .kpic {
+    padding: 10px 10px;
+    gap: 6px;
+    flex-direction: column;
+    align-items: flex-start;
+
+    .kpic-left {
+      gap: 8px;
+      width: 100%;
+    }
+
+    .kpic-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      flex-shrink: 0;
+
+      svg {
+        width: 15px;
+        height: 15px;
+      }
+    }
+
+    .kpic-body {
+      .kpic-label {
+        white-space: normal;
+        font-size: 10px;
+        letter-spacing: 0.02em;
+        line-height: 1.2;
+      }
+
+      .kpic-value {
+        font-size: 14px;
+      }
+    }
+
+    .kpic-badge {
+      display: none;
+    }
   }
 }

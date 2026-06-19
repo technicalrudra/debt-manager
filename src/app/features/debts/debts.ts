@@ -12,6 +12,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router } from '@angular/router';
 import { DebtService } from '../../core/services/debt.service';
 import { EmptyState } from '../../shared/components/empty-state/empty-state';
 
@@ -41,8 +42,12 @@ export class Debts implements OnInit {
   private debtService = inject(DebtService);
   private dialog = inject(MatDialog);
   private fb = inject(FormBuilder);
+  private router = inject(Router);
 
   @ViewChild('addDebtDialog') addDebtDialogTemp!: TemplateRef<any>;
+  @ViewChild('editDebtDialog') editDebtDialogTemp!: TemplateRef<any>;
+
+  editingId = signal<string | null>(null);
 
   displayedColumns: string[] = ['name', 'type', 'currentBalance', 'interestRate', 'emi', 'priority', 'progress', 'actions'];
 
@@ -133,5 +138,52 @@ export class Debts implements OnInit {
       status: 'Active'
     });
     if (success) this.dialog.closeAll();
+  }
+
+  openDebtDetail(id: string) {
+    this.router.navigate(['/debts', id]);
+  }
+
+  openEditDialog(id: string) {
+    const debt = this.debtService.debts().find(d => d.id === id);
+    if (!debt) return;
+    this.editingId.set(id);
+    this.debtForm = this.fb.group({
+      name: [debt.name, Validators.required],
+      type: [debt.type, Validators.required],
+      lender: [debt.lender, Validators.required],
+      original_amount: [debt.original_amount, [Validators.required, Validators.min(1)]],
+      current_balance: [debt.current_balance, [Validators.required, Validators.min(0)]],
+      interest_rate: [debt.interest_rate, [Validators.required, Validators.min(0)]],
+      emi: [debt.emi, [Validators.required, Validators.min(1)]],
+      tenure: [debt.tenure, [Validators.min(1)]],
+      due_date: [debt.due_date, [Validators.required, Validators.min(1), Validators.max(31)]],
+      priority: [debt.priority, Validators.required]
+    });
+    this.dialog.open(this.editDebtDialogTemp, {
+      width: '560px',
+      panelClass: 'custom-dialog-container'
+    });
+  }
+
+  async saveEditedDebt() {
+    if (this.debtForm.invalid || !this.editingId()) return;
+    const val = this.debtForm.value;
+    const success = await this.debtService.updateDebt(this.editingId()!, {
+      name: val.name,
+      type: val.type,
+      lender: val.lender,
+      original_amount: val.original_amount,
+      current_balance: val.current_balance,
+      interest_rate: val.interest_rate,
+      emi: val.emi,
+      tenure: val.tenure ?? 0,
+      due_date: val.due_date,
+      priority: val.priority
+    });
+    if (success) {
+      this.editingId.set(null);
+      this.dialog.closeAll();
+    }
   }
 }

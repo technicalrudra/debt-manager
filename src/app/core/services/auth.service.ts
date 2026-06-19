@@ -38,6 +38,12 @@ export class AuthService {
 
     // Listen to auth state changes
     this.supabase.client.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null) => {
+      // Guard: INITIAL_SESSION with no session while we already have a user means
+      // a token refresh is in progress — do not wipe the existing auth state.
+      if (event === 'INITIAL_SESSION' && !session && this.currentUser()) {
+        return;
+      }
+
       this.currentSession.set(session);
       this.currentUser.set(session?.user ?? null);
 
@@ -64,7 +70,7 @@ export class AuthService {
   }
 
   async signUp(email: string, password: string, fullName: string): Promise<{ success: boolean; error?: string }> {
-    const { data, error } = await this.supabase.client.auth.signUp({
+    const { error } = await this.supabase.client.auth.signUp({
       email,
       password,
       options: {

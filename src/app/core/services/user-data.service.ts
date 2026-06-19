@@ -1,4 +1,4 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
+import { Injectable, inject, signal, computed, effect, untracked } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import { AuthService } from './auth.service';
 import { Profile, ProfileUpdate } from '../models/profile.model';
@@ -15,6 +15,20 @@ export class UserDataService {
   incomeSources = signal<IncomeSource[]>([]);
 
   onboardingCompleted = computed(() => this.profile()?.onboarding_completed ?? false);
+
+  constructor() {
+    effect(() => {
+      const userId = this.auth.currentUser()?.id;
+      untracked(() => {
+        if (userId) {
+          this.loadAll();
+        } else {
+          this.profile.set(null);
+          this.incomeSources.set([]);
+        }
+      });
+    });
+  }
 
   totalMonthlyIncome = computed(() => {
     return this.incomeSources().reduce((sum, src) => sum + Number(src.amount), 0);

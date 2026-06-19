@@ -376,12 +376,22 @@ h6 {
 
 .sidenav {
   width: 280px;
-  background-color: var(--surface-color);
-  border-right: 1px solid var(--border-color);
+  background: linear-gradient(175deg, #0b1936 0%, #0f2a5e 55%, #1a3f7a 100%);
+  border-right: none;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   height: 100%;
   padding-bottom: 25px;
+
+  // Override Angular Material list token colors for dark sidebar
+  --mat-list-list-item-label-text-color: rgba(186, 213, 255, 0.8);
+  --mat-list-list-item-leading-icon-color: rgba(147, 197, 253, 0.65);
+  --mat-list-list-item-hover-label-text-color: #ffffff;
+  --mat-list-list-item-hover-leading-icon-color: #93c5fd;
+  --mat-list-list-item-hover-state-layer-color: rgba(255, 255, 255, 0.06);
+  --mat-list-active-indicator-color: rgba(255, 255, 255, 0.12);
+  --mat-list-list-item-focus-state-layer-color: rgba(255, 255, 255, 0.08);
 
   &.collapsed {
     width: 80px;
@@ -427,6 +437,23 @@ h6 {
   max-width: 600px;
   display: flex;
   align-items: center;
+}
+
+.header-greeting {
+  margin-left: 8px;
+
+  .header-hello {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1d2939;
+    line-height: 1.2;
+  }
+
+  .header-hello-sub {
+    font-size: 12px;
+    color: #98a2b3;
+    font-weight: 400;
+  }
 }
 
 .search-container {
@@ -607,9 +634,10 @@ h6 {
   padding: var(--spacing-3) var(--spacing-2);
   margin-bottom: var(--spacing-2);
   min-height: 64px;
+  border-bottom: 1px solid rgba(147, 197, 253, 0.15);
 
   .logo-icon {
-    color: var(--primary-color);
+    color: #93c5fd;
     font-size: 32px;
     height: 32px;
     width: 32px;
@@ -618,6 +646,7 @@ h6 {
     display: flex;
     align-items: center;
     justify-content: center;
+    filter: drop-shadow(0 0 8px rgba(147, 197, 253, 0.4));
   }
 
   .logo-info {
@@ -629,14 +658,14 @@ h6 {
   .logo-text {
     font-size: 18px;
     font-weight: 700;
-    color: var(--text-primary);
+    color: #ffffff;
     line-height: 1.2;
     white-space: nowrap;
   }
 
   .logo-sub {
     font-size: 11px;
-    color: var(--text-secondary);
+    color: rgba(147, 197, 253, 0.7);
     white-space: nowrap;
   }
 }
@@ -644,55 +673,85 @@ h6 {
 .nav-item {
   border-radius: 8px !important;
   margin-bottom: 4px;
-  color: var(--text-secondary);
+  color: rgba(186, 213, 255, 0.75);
   height: 44px !important;
   display: flex;
   align-items: center;
+  transition: background 0.2s ease, color 0.2s ease;
 
-  mat-icon {
-    color: var(--text-secondary);
+  // Force icon color to override Angular Material's matListItemIcon defaults
+  mat-icon,
+  .mat-mdc-list-item-icon,
+  .mat-mdc-list-item-icon mat-icon {
+    color: rgba(147, 197, 253, 0.7) !important;
     font-size: 20px;
     height: 20px;
     width: 20px;
-    margin-right: 12px;
+    transition: color 0.2s ease;
+  }
+
+  // Force text color on MDC list item label
+  .mdc-list-item__primary-text {
+    color: rgba(186, 213, 255, 0.8) !important;
   }
 
   &:hover {
-    background-color: var(--background-color);
+    background-color: rgba(255, 255, 255, 0.08) !important;
+
+    mat-icon,
+    .mat-mdc-list-item-icon,
+    .mat-mdc-list-item-icon mat-icon {
+      color: #93c5fd !important;
+    }
+
+    .mdc-list-item__primary-text {
+      color: #ffffff !important;
+    }
   }
 
   &.active-link {
-    background-color: #f1f5f9 !important;
-    color: var(--primary-color) !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    color: #ffffff !important;
     font-weight: 600;
+    border-left: 3px solid #60a5fa;
+    padding-left: 13px !important;
 
-    mat-icon {
-      color: var(--primary-color) !important;
+    mat-icon,
+    .mat-mdc-list-item-icon,
+    .mat-mdc-list-item-icon mat-icon {
+      color: #93c5fd !important;
+    }
+
+    .mdc-list-item__primary-text {
+      color: #ffffff !important;
+      font-weight: 600;
     }
   }
 }
 
 .status-card {
-  background: #eef2ff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(147, 197, 253, 0.2);
   border-radius: 12px;
   padding: 16px;
+  backdrop-filter: blur(4px);
 
   .status-label {
     font-size: 11px;
-    color: var(--text-secondary);
+    color: rgba(147, 197, 253, 0.7);
     margin-bottom: 2px;
   }
 
   .status-value {
     font-size: 18px;
     font-weight: 700;
-    color: var(--text-primary);
+    color: #ffffff;
     margin-bottom: 4px;
   }
 
   .status-sub {
     font-size: 10px;
-    color: var(--text-secondary);
+    color: rgba(186, 213, 255, 0.6);
     line-height: 1.3;
   }
 }
@@ -2194,5 +2253,62 @@ th.mat-mdc-header-cell {
       box-shadow: none;
       opacity: 0.6;
     }
+  }
+}
+
+/* ============================================================
+   MOBILE RESPONSIVE — Phase 1 (breakpoints)
+   ============================================================ */
+
+/* Logo container — space between brand and close button */
+.logo-container {
+  justify-content: space-between;
+}
+
+.logo-brand {
+  display: flex;
+  align-items: center;
+}
+
+/* Header app name (mobile only) */
+.header-app-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  margin-left: 4px;
+}
+
+/* <768px — phones and small tablets */
+@media (max-width: 767px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+
+  .header {
+    padding: 0 12px;
+  }
+
+  .main-content {
+    padding: var(--spacing-2);
+    padding-bottom: 72px;
+  }
+
+  .user-profile .profile-arrow {
+    display: none;
+  }
+
+  /* Dialogs: cap at 95vw so they never overflow the screen */
+  .custom-dialog-container {
+    max-width: 95vw !important;
+    width: 95vw !important;
+  }
+}
+
+/* (hover: none) — disable hover lifts on touch devices */
+@media (hover: none) {
+  .kpi-card:hover {
+    transform: none !important;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px !important;
   }
 }

@@ -1,6 +1,15 @@
 <mat-sidenav-container class="sidenav-container" [autosize]="true">
-  <mat-sidenav mode="side" opened class="sidenav" [class.collapsed]="isCollapsed()">
-    <app-sidebar [isCollapsed]="isCollapsed()"></app-sidebar>
+  <mat-sidenav
+    [mode]="sidenavMode()"
+    [opened]="sidenavOpened()"
+    (openedChange)="onSidenavOpenedChange($event)"
+    class="sidenav"
+    [class.collapsed]="!isMobile() && isCollapsed()">
+    <app-sidebar
+      [isCollapsed]="!isMobile() && isCollapsed()"
+      [isMobile]="isMobile()"
+      (close)="sidenavOpen.set(false)">
+    </app-sidebar>
   </mat-sidenav>
   <mat-sidenav-content class="sidenav-content">
     <app-header (toggleSidebar)="toggleSidebar()"></app-header>
@@ -9,3 +18,7 @@
     </main>
   </mat-sidenav-content>
 </mat-sidenav-container>
+
+@if (isMobile()) {
+  <app-bottom-nav />
+}

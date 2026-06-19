@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, effect, untracked } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import { AuthService } from './auth.service';
 import { Payment, PaymentInsert } from '../models/payment.model';
@@ -14,6 +14,19 @@ export class PaymentService {
 
   payments = signal<Payment[]>([]);
   loading = signal(false);
+
+  constructor() {
+    effect(() => {
+      const userId = this.auth.currentUser()?.id;
+      untracked(() => {
+        if (userId) {
+          this.loadPayments();
+        } else {
+          this.payments.set([]);
+        }
+      });
+    });
+  }
 
   async loadPayments(): Promise<void> {
     const userId = this.auth.currentUser()?.id;
