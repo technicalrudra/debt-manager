@@ -1,0 +1,272 @@
+<div class="detail-page">
+
+  <!-- Page header -->
+  <div class="detail-page-header">
+    <button class="back-btn" (click)="goBack()">
+      <svg lucideArrowLeft [size]="16" [strokeWidth]="2"></svg>
+      Back to Debts
+    </button>
+
+    @if (debt()) {
+      <div class="debt-title-row">
+        <div class="debt-title-left">
+          <h1 class="debt-title">{{ debt()!.name }}</h1>
+          <div class="debt-meta">
+            <span class="meta-pill type">{{ debt()!.type }}</span>
+            <span class="meta-pill" [ngClass]="'priority-' + debt()!.priority.toLowerCase()">{{ debt()!.priority }} Priority</span>
+            <span class="meta-pill" [ngClass]="debt()!.status === 'Active' ? 'status-active' : 'status-closed'">{{ debt()!.status }}</span>
+            <span class="meta-text"><svg lucideBanknote [size]="13" [strokeWidth]="2"></svg> {{ debt()!.lender }}</span>
+            <span class="meta-text"><svg lucidePercent [size]="13" [strokeWidth]="2"></svg> {{ debt()!.interest_rate }}% APR</span>
+            <span class="meta-text"><svg lucideClock [size]="13" [strokeWidth]="2"></svg> Due {{ debt()!.due_date }}th of month</span>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading debt details…</p>
+    </div>
+  } @else if (!debt()) {
+    <div class="not-found">
+      <svg lucideWallet [size]="48" [strokeWidth]="1.25"></svg>
+      <h2>Debt not found</h2>
+      <button class="back-btn" (click)="goBack()">← Go back</button>
+    </div>
+  } @else {
+
+    <!-- KPI cards -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-icon-wrap kpi-purple"><svg lucideWallet [size]="20" [strokeWidth]="1.75"></svg></div>
+        <div>
+          <div class="kpi-label">Total Amount</div>
+          <div class="kpi-value">₹{{ stats()!.original | number }}</div>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon-wrap kpi-green"><svg lucideCircleCheck [size]="20" [strokeWidth]="1.75"></svg></div>
+        <div>
+          <div class="kpi-label">Paid So Far</div>
+          <div class="kpi-value text-success">₹{{ stats()!.paid | number }}</div>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon-wrap kpi-red"><svg lucideTrendingDown [size]="20" [strokeWidth]="1.75"></svg></div>
+        <div>
+          <div class="kpi-label">Outstanding</div>
+          <div class="kpi-value text-danger">₹{{ stats()!.current | number }}</div>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon-wrap kpi-blue"><svg lucideBanknote [size]="20" [strokeWidth]="1.75"></svg></div>
+        <div>
+          <div class="kpi-label">Monthly EMI</div>
+          <div class="kpi-value">₹{{ stats()!.emi | number }}</div>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon-wrap kpi-orange"><svg lucideFlame [size]="20" [strokeWidth]="1.75"></svg></div>
+        <div>
+          <div class="kpi-label">Interest Left</div>
+          <div class="kpi-value text-warning">₹{{ stats()!.interestRemaining | number }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress + Timeline -->
+    <div class="mid-grid">
+
+      <!-- Progress card -->
+      <mat-card class="detail-card progress-card">
+        <div class="detail-card-header">
+          <span class="detail-card-title">Repayment Progress</span>
+          <span class="pct-badge" [style.background]="stats()!.barColor + '20'" [style.color]="stats()!.barColor">
+            {{ stats()!.paidPct }}% paid
+          </span>
+        </div>
+
+        <div class="progress-visual">
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill"
+              [style.width.%]="stats()!.paidPct"
+              [style.background]="stats()!.barColor">
+            </div>
+          </div>
+          <div class="progress-labels">
+            <span class="text-success">₹{{ stats()!.paid | number }} paid</span>
+            <span class="text-danger">₹{{ stats()!.current | number }} left</span>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-item">
+            <div class="stat-icon bg-green-soft"><svg lucideCalendarCheck [size]="16" [strokeWidth]="1.75" class="text-success"></svg></div>
+            <div>
+              <div class="stat-label">Payments Made</div>
+              <div class="stat-value">{{ stats()!.monthsPaid }}</div>
+            </div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-icon bg-red-soft"><svg lucideClock [size]="16" [strokeWidth]="1.75" class="text-danger"></svg></div>
+            <div>
+              <div class="stat-label">Months Remaining</div>
+              <div class="stat-value">{{ stats()!.monthsRemaining }}</div>
+            </div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-icon bg-indigo-soft"><svg lucideTarget [size]="16" [strokeWidth]="1.75" class="text-primary"></svg></div>
+            <div>
+              <div class="stat-label">Payoff Month</div>
+              <div class="stat-value">{{ fmt(stats()!.payoffDate) }}</div>
+            </div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-icon bg-orange-soft"><svg lucidePiggyBank [size]="16" [strokeWidth]="1.75" class="text-warning"></svg></div>
+            <div>
+              <div class="stat-label">Interest Paid</div>
+              <div class="stat-value">₹{{ stats()!.interestPaid | number }}</div>
+            </div>
+          </div>
+        </div>
+      </mat-card>
+
+      <!-- Timeline card -->
+      <mat-card class="detail-card timeline-card">
+        <div class="detail-card-header">
+          <span class="detail-card-title">Payoff Timeline</span>
+        </div>
+
+        <div class="timeline-track-wrap">
+          <!-- Start / End header row — always at opposite edges, no overlap -->
+          <div class="tl-header-row">
+            <div class="tl-info">
+              <div class="tl-date-text">{{ fmt(stats()!.startDate) }}</div>
+              <div class="tl-cap">Started</div>
+            </div>
+            <div class="tl-info tl-info-right">
+              <div class="tl-date-text">{{ fmt(stats()!.payoffDate) }}</div>
+              <div class="tl-cap">Debt-free</div>
+            </div>
+          </div>
+
+          <!-- Track -->
+          <div class="timeline-track">
+            <div class="timeline-fill" [style.width.%]="stats()!.paidPct"></div>
+            <div class="timeline-dot dot-start"></div>
+            <div class="timeline-dot dot-now" [style.left.%]="stats()!.paidPct"></div>
+            <div class="timeline-dot dot-end"></div>
+          </div>
+
+          <!-- "Today" pin — clamped so it never overlaps start/end labels -->
+          <div class="tl-now-row">
+            <div class="tl-now-pin" [style.left.%]="nowLabelPct">
+              <div class="tl-now-label">Today</div>
+              <div class="tl-now-pct">{{ stats()!.paidPct }}% paid</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-summary">
+          <div class="ts-item">
+            <span class="ts-dot dot-green"></span>
+            <div>
+              <div class="ts-value">{{ stats()!.monthsPaid }} months</div>
+              <div class="ts-label">Completed</div>
+            </div>
+          </div>
+          <div class="ts-divider"></div>
+          <div class="ts-item">
+            <span class="ts-dot dot-red"></span>
+            <div>
+              <div class="ts-value">{{ stats()!.monthsRemaining }} months</div>
+              <div class="ts-label">Remaining</div>
+            </div>
+          </div>
+          <div class="ts-divider"></div>
+          <div class="ts-item">
+            <span class="ts-dot dot-indigo"></span>
+            <div>
+              <div class="ts-value">₹{{ stats()!.interestRemaining | number }}</div>
+              <div class="ts-label">Interest left</div>
+            </div>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Early Payoff Scenarios -->
+    <mat-card class="detail-card scenarios-card">
+      <div class="detail-card-header">
+        <span class="detail-card-title">
+          <svg lucideLightbulb [size]="16" [strokeWidth]="2" class="me-1 text-warning"></svg>
+          Early Payoff Scenarios
+        </span>
+        <span class="detail-card-sub">How much faster can you be debt-free?</span>
+      </div>
+
+      <div class="scenarios-grid">
+        @for (s of scenarios(); track s.label) {
+          <div class="scenario-card" [class.scenario-base]="s.isBase">
+            <div class="scenario-label">{{ s.label }}</div>
+            <div class="scenario-months">
+              {{ s.months }}
+              <span class="scenario-unit">months</span>
+            </div>
+            <div class="scenario-date">{{ fmt(s.payoffDate) }}</div>
+            @if (!s.isBase) {
+              <div class="scenario-savings">
+                <svg lucideZap [size]="12" [strokeWidth]="2"></svg>
+                Save {{ s.monthsSaved }} month{{ s.monthsSaved !== 1 ? 's' : '' }}
+              </div>
+            } @else {
+              <div class="scenario-savings base-label">Baseline</div>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="scenario-tip">
+        <svg lucideFlame [size]="14" [strokeWidth]="2"></svg>
+        Even ₹2,000 extra per month cuts
+        {{ scenarios()[1]?.monthsSaved || 0 }} months off your payoff timeline.
+        Put bonuses or windfalls directly toward this debt for maximum impact.
+      </div>
+    </mat-card>
+
+    <!-- Payment History -->
+    <mat-card class="detail-card payment-history-card">
+      <div class="detail-card-header">
+        <span class="detail-card-title">
+          <svg lucideScrollText [size]="16" [strokeWidth]="2" class="me-1"></svg>
+          Payment History
+        </span>
+        <span class="detail-card-sub">{{ debtPayments().length }} payment{{ debtPayments().length !== 1 ? 's' : '' }} recorded</span>
+      </div>
+
+      @if (debtPayments().length > 0) {
+        <div class="ph-list">
+          @for (p of debtPayments(); track p.id) {
+            <div class="ph-row">
+              <div class="ph-icon">
+                <svg lucideCircleCheck [size]="16" [strokeWidth]="1.75"></svg>
+              </div>
+              <div class="ph-date">{{ fmtFull(p.payment_date) }}</div>
+              <div class="ph-method">{{ p.method }}</div>
+              <div class="ph-notes">{{ p.notes || '—' }}</div>
+              <div class="ph-amount">₹{{ p.amount | number }}</div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="ph-empty">
+          <svg lucideScrollText [size]="36" [strokeWidth]="1.25"></svg>
+          <p>No payments recorded yet for this debt.</p>
+        </div>
+      }
+    </mat-card>
+
+  }
+</div>
