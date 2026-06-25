@@ -186,12 +186,278 @@ h6 {
 .success-icon-wrapper {
   display: flex;
   justify-content: center;
-  
+
   .success-icon {
     font-size: 72px;
     height: 72px;
     width: 72px;
     color: var(--success-color);
+  }
+}
+
+// Shared 50/50 auth page layout (Login / Signup / Forgot-Password)
+.login-page {
+  display: flex;
+  min-height: 100vh;
+
+  .login-left {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    padding: 48px 40px;
+
+    .login-form-wrap {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .form-brand {
+      margin-bottom: 28px;
+      mat-icon {
+        font-size: 36px;
+        width: 36px;
+        height: 36px;
+        color: #4f46e5;
+      }
+    }
+
+    .form-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: #1d2939;
+      margin: 0 0 6px;
+      letter-spacing: -0.03em;
+    }
+
+    .form-subtitle {
+      font-size: 14px;
+      color: #667085;
+      margin: 0 0 28px;
+    }
+
+    .auth-alert {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 16px;
+
+      mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .forgot-link {
+      font-size: 13px;
+      color: #4f46e5;
+      font-weight: 500;
+      text-decoration: none;
+      &:hover { text-decoration: underline; }
+    }
+
+    .submit-btn {
+      height: 48px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 10px;
+      letter-spacing: 0.01em;
+    }
+
+    .signup-link, .login-link {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 14px;
+      color: #667085;
+
+      a {
+        color: #4f46e5;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        mat-icon { font-size: 16px; width: 16px; height: 16px; }
+        &:hover { text-decoration: underline; }
+      }
+    }
+
+    // Password strength meter
+    .pw-strength-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 4px 0 8px;
+    }
+
+    .pw-strength-bar {
+      flex: 1;
+      height: 4px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+
+      .pw-strength-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.3s ease, background 0.3s ease;
+      }
+    }
+
+    .pw-strength-label {
+      font-size: 12px;
+      font-weight: 600;
+      min-width: 40px;
+      text-align: right;
+    }
+
+    .pw-rules {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .pw-rule {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #94a3b8;
+      transition: color 0.2s;
+
+      mat-icon { font-size: 14px; width: 14px; height: 14px; color: #94a3b8; transition: color 0.2s; }
+
+      &.met {
+        color: #10b981;
+        mat-icon { color: #10b981; }
+      }
+    }
+  }
+
+  .login-right {
+    width: 50%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 52px;
+    overflow: hidden;
+    background: #0b0f1e;
+
+    .right-overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(135deg, rgba(15, 23, 64, 0.95) 0%, rgba(30, 58, 95, 0.85) 50%, rgba(8, 12, 30, 0.95) 100%),
+        repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 12px);
+      z-index: 1;
+    }
+
+    .right-brand {
+      position: absolute;
+      top: 40px;
+      left: 52px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 3;
+
+      .brand-icon-wrap {
+        width: 38px;
+        height: 38px;
+        background: rgba(99, 102, 241, 0.25);
+        border: 1px solid rgba(129, 140, 248, 0.4);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        mat-icon { font-size: 20px; width: 20px; height: 20px; color: #a5b4fc; }
+      }
+
+      .brand-name {
+        font-size: 17px;
+        font-weight: 700;
+        color: #ffffff;
+        letter-spacing: -0.01em;
+      }
+    }
+
+    .right-content {
+      position: relative;
+      z-index: 3;
+
+      .right-headline {
+        font-size: 34px;
+        font-weight: 800;
+        color: #ffffff;
+        line-height: 1.2;
+        margin: 0 0 14px;
+        letter-spacing: -0.03em;
+        max-width: 420px;
+      }
+
+      .right-sub {
+        font-size: 15px;
+        color: #94a3b8;
+        line-height: 1.65;
+        margin: 0 0 40px;
+        max-width: 380px;
+      }
+
+      .feature-list { display: flex; flex-direction: column; gap: 22px; }
+
+      .feature-item { display: flex; align-items: flex-start; gap: 16px; }
+
+      .feature-icon-box {
+        width: 42px;
+        height: 42px;
+        background: rgba(79, 70, 229, 0.2);
+        border: 1px solid rgba(129, 140, 248, 0.25);
+        border-radius: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        mat-icon { font-size: 20px; width: 20px; height: 20px; color: #a5b4fc; }
+      }
+
+      .feature-title { font-size: 14px; font-weight: 700; color: #f1f5f9; margin-bottom: 3px; }
+      .feature-desc  { font-size: 13px; color: #64748b; line-height: 1.5; }
+    }
+
+    .blob { position: absolute; border-radius: 50%; z-index: 2; pointer-events: none; }
+    .blob-1 { width: 480px; height: 480px; top: -160px; right: -140px; background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, transparent 70%); }
+    .blob-2 { width: 300px; height: 300px; bottom: -100px; left: -80px; background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%); }
+    .blob-3 { width: 200px; height: 200px; bottom: 120px; right: 40px; background: radial-gradient(circle, rgba(129, 140, 248, 0.08) 0%, transparent 70%); }
+  }
+}
+
+@media (max-width: 768px) {
+  .login-page {
+    flex-direction: column;
+
+    .login-left,
+    .login-right { width: 100%; }
+
+    .login-right {
+      min-height: 280px;
+      padding: 40px 24px;
+      .right-content .right-headline { font-size: 24px; }
+      .feature-list { gap: 16px; }
+    }
   }
 }
 
@@ -322,6 +588,22 @@ h6 {
 
 .subtitle {
   font-size: 14px;
+}
+
+.action-btn-filled {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  height: 40px;
+  padding: 0 20px !important;
+  font-size: 14px !important;
+}
+
+.action-btn-outline {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  height: 40px;
+  padding: 0 20px !important;
+  font-size: 14px !important;
 }
 
 .kpi-card {
@@ -2311,4 +2593,139 @@ th.mat-mdc-header-cell {
     transform: none !important;
     box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px !important;
   }
+}
+
+/* ==========================================================================
+   DARK MODE  — toggled via [data-theme="dark"] on <html>
+   ========================================================================== */
+[data-theme="dark"] {
+  /* Override CSS custom properties */
+  --surface-color: #1e293b;
+  --background-color: #0f172a;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --border-color: #334155;
+  --ascent-background-color: #1e293b;
+
+  /* Page background */
+  body {
+    background-color: #0f172a;
+    color: #f1f5f9;
+  }
+
+  /* Material cards */
+  .mat-mdc-card,
+  .grid-card,
+  .premium-card {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #f1f5f9 !important;
+  }
+
+  /* Card titles and text */
+  .mat-mdc-card-title,
+  .mat-mdc-card-subtitle,
+  mat-card-title,
+  mat-card-subtitle {
+    color: #f1f5f9 !important;
+  }
+
+  /* Sidebar */
+  .sidebar-content {
+    background: #1e293b !important;
+    border-right-color: #334155 !important;
+  }
+  .logo-text, .logo-sub, .nav-item, .sidebar-footer { color: #cbd5e1 !important; }
+  .nav-item.active-link { background: rgba(99, 102, 241, 0.2) !important; color: #818cf8 !important; }
+
+  /* Header / toolbar */
+  .header, mat-toolbar.header {
+    background: #1e293b !important;
+    border-bottom: 1px solid #334155 !important;
+    color: #f1f5f9 !important;
+  }
+  .header-hello, .header-app-name { color: #f1f5f9 !important; }
+
+  /* Material form fields */
+  .mat-mdc-text-field-wrapper,
+  .mat-mdc-form-field-flex {
+    background-color: #1e293b !important;
+  }
+  .mat-mdc-floating-label,
+  .mdc-floating-label { color: #94a3b8 !important; }
+  .mdc-text-field--outlined .mdc-notched-outline__leading,
+  .mdc-text-field--outlined .mdc-notched-outline__notch,
+  .mdc-text-field--outlined .mdc-notched-outline__trailing {
+    border-color: #475569 !important;
+  }
+  .mat-mdc-input-element, input.mat-mdc-input-element { color: #f1f5f9 !important; }
+
+  /* Tables */
+  .mat-mdc-table { background: #1e293b !important; }
+  .mat-mdc-header-row { background: #0f172a !important; }
+  .mat-mdc-row:hover td { background: #273549 !important; }
+  .mat-mdc-header-cell { color: #94a3b8 !important; border-bottom-color: #334155 !important; }
+  .mat-mdc-cell { color: #e2e8f0 !important; border-bottom-color: #334155 !important; }
+
+  /* Bottom nav */
+  .bottom-nav { background: #1e293b !important; border-top-color: #334155 !important; }
+  .bottom-nav-item { color: #94a3b8 !important; }
+  .bottom-nav-item.active { color: #818cf8 !important; }
+
+  /* KPI cards */
+  .kpi-card, .kpic {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    color: #f1f5f9 !important;
+  }
+
+  /* Modal / dialog */
+  .modal-container { background: #1e293b !important; }
+  .modal-header, .modal-footer { border-color: #334155 !important; }
+  .modal-header h2 { color: #f1f5f9 !important; }
+  .mat-mdc-dialog-surface { background: #1e293b !important; }
+
+  /* Chips */
+  .mat-mdc-chip { background: #334155 !important; color: #e2e8f0 !important; }
+
+  /* Menu */
+  .mat-mdc-menu-panel { background: #1e293b !important; }
+  .mat-mdc-menu-item { color: #e2e8f0 !important; }
+  .mat-mdc-menu-item:hover { background: #273549 !important; }
+
+  /* Misc text */
+  .text-secondary { color: #94a3b8 !important; }
+  h1, h2, h3, h4, h5, h6 { color: #f1f5f9 !important; }
+  .welcome-text { color: #f1f5f9 !important; }
+  .subtitle { color: #94a3b8 !important; }
+
+  /* Dividers */
+  mat-divider, .mat-divider { border-top-color: #334155 !important; }
+
+  /* Snack bar info row */
+  .settings-info-row { background: #273549 !important; }
+  .about-stat { background: #273549 !important; }
+}
+
+/* ==========================================================================
+   COMPACT MODE — toggled via .compact-mode on <body>
+   ========================================================================== */
+body.compact-mode {
+  .container-fluid { padding-top: 8px !important; padding-bottom: 8px !important; }
+
+  .page-header { margin-bottom: 12px !important; }
+  .welcome-text { font-size: 22px !important; }
+  .subtitle { font-size: 13px !important; }
+
+  /* Tighter card padding */
+  .mat-mdc-card-content { padding: 12px !important; }
+
+  /* Tighter grid gutters */
+  .row.g-3 { --bs-gutter-y: 0.5rem; --bs-gutter-x: 0.5rem; }
+  .row.g-2 { --bs-gutter-y: 0.35rem; --bs-gutter-x: 0.35rem; }
+  .mb-4 { margin-bottom: 12px !important; }
+
+  /* KPI cards */
+  .kpi-card { padding: 12px !important; }
+  .kpic { padding: 10px 12px !important; }
 }

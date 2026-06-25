@@ -12,8 +12,8 @@
   <div class="header-right">
    
 
-    <button mat-icon-button class="header-action hide-on-mobile">
-      <mat-icon>dark_mode</mat-icon>
+    <button mat-icon-button class="header-action hide-on-mobile" (click)="toggleDarkMode()">
+      <mat-icon>{{ theme.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
     </button>
     <button mat-icon-button class="header-action hide-on-mobile">
       <mat-icon>notifications</mat-icon>
@@ -26,11 +26,11 @@
     </div>
     
     <mat-menu #userMenu="matMenu" class="custom-menu">
-      <button mat-menu-item>
+      <button mat-menu-item (click)="goToProfile()">
         <mat-icon>person</mat-icon>
         <span>Profile</span>
       </button>
-      <button mat-menu-item>
+      <button mat-menu-item (click)="goToSettings()">
         <mat-icon>settings</mat-icon>
         <span>Settings</span>
       </button>

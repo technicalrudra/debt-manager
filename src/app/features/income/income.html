@@ -1,14 +1,12 @@
 <div class="container-fluid py-3">
-  <div class="page-header mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+  <div class="page-header d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
     <div>
-      <h1 class="page-title mb-1">Income Sources</h1>
+      <h1 class="welcome-text mb-1">Income Sources</h1>
       <p class="text-secondary subtitle mb-0">Manage and track your various streams of income.</p>
     </div>
-    <div class="d-flex gap-2">
-      <button mat-flat-button color="primary" class="action-button px-4" (click)="openAddDialog()">
-        <mat-icon>add</mat-icon> Add Income
-      </button>
-    </div>
+    <button mat-flat-button color="primary" class="action-btn-filled" (click)="openAddDialog()">
+      <mat-icon>add</mat-icon> Add Income
+    </button>
   </div>
 
   <div class="row g-3 mb-4">

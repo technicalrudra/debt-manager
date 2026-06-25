@@ -1,8 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
+import { RouterModule } from '@angular/router';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,7 +13,8 @@ import { ToastService } from '../../../core/services/toast.service';
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, MatCardModule, MatInputModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './forgot-password.html',
   styleUrls: ['./forgot-password.scss']
 })
@@ -23,9 +24,9 @@ export class ForgotPassword {
   private toast = inject(ToastService);
 
   resetForm: FormGroup;
-  loading = false;
-  emailSent = false;
-  errorMessage = '';
+  loading = signal(false);
+  emailSent = signal(false);
+  errorMessage = signal('');
 
   constructor() {
     this.resetForm = this.fb.group({
@@ -36,20 +37,21 @@ export class ForgotPassword {
   async onSubmit() {
     if (this.resetForm.invalid) return;
 
-    this.loading = true;
-    this.errorMessage = '';
+    this.loading.set(true);
+    this.errorMessage.set('');
 
     const { email } = this.resetForm.value;
     const result = await this.authService.resetPassword(email);
 
-    this.loading = false;
+    this.loading.set(false);
 
     if (result.success) {
-      this.emailSent = true;
+      this.emailSent.set(true);
       this.toast.success('Password reset link sent to your email.');
     } else {
-      this.errorMessage = result.error || 'Failed to send reset email. Please try again.';
-      this.toast.error(this.errorMessage);
+      const msg = result.error || 'Failed to send reset email. Please try again.';
+      this.errorMessage.set(msg);
+      this.toast.error(msg);
     }
   }
 }

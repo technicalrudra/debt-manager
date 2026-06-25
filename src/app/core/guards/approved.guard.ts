@@ -31,7 +31,7 @@ export const approvedGuard: CanActivateFn = async () => {
   if (status === 'pending') {
     router.navigate(['/pending-approval']);
   } else {
-    router.navigate(['/login']);
+    router.navigate(['/login'], { replaceUrl: true });
   }
   return false;
 };

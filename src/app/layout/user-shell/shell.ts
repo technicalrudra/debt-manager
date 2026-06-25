@@ -7,6 +7,8 @@ import { Subscription } from 'rxjs';
 import { Sidebar } from '../sidebar/sidebar';
 import { Header } from '../header/header';
 import { BottomNav } from '../bottom-nav/bottom-nav';
+import { PreferencesService } from '../../core/services/preferences.service';
+import { ThemeService } from '../../core/services/theme.service';
 
 @Component({
   selector: 'app-shell',
@@ -17,6 +19,8 @@ import { BottomNav } from '../bottom-nav/bottom-nav';
 })
 export class Shell implements OnDestroy {
   private breakpoints = inject(BreakpointObserver);
+  private prefs = inject(PreferencesService);
+  private theme = inject(ThemeService);
   private bpSub: Subscription;
 
   isCollapsed = signal(false);
@@ -31,6 +35,14 @@ export class Shell implements OnDestroy {
       this.isMobile.set(result.matches);
       if (!result.matches) {
         this.sidenavOpen.set(false);
+      }
+    });
+
+    // Load saved preferences and apply theme as soon as the shell mounts
+    this.prefs.load().then(() => {
+      const s = this.prefs.settings();
+      if (s) {
+        this.theme.applyFromSettings(s.dark_mode, s.compact_view ?? false);
       }
     });
   }

@@ -1,5 +1,6 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs';
 import { SupabaseService } from './supabase.service';
 import { Profile } from '../models/profile.model';
 import { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
@@ -22,23 +23,58 @@ export class AuthService {
   userStatus = computed(() => this.currentProfile()?.status || 'pending');
   userRole = computed(() => this.currentProfile()?.role || 'user');
 
+  // Auto-logout after 15 minutes of inactivity
+  private readonly INACTIVITY_MS = 15 * 60 * 1000;
+  private readonly LAST_SEEN_KEY = '_sb_last_seen';
+
   constructor() {
     this.initAuthListener();
   }
 
   private async initAuthListener() {
-    // Get initial session
     const { data: { session } } = await this.supabase.client.auth.getSession();
+
     if (session) {
+      // Force logout if user has been inactive beyond the threshold
+      const lastSeen = sessionStorage.getItem(this.LAST_SEEN_KEY);
+      if (lastSeen && Date.now() - parseInt(lastSeen, 10) > this.INACTIVITY_MS) {
+        await this.supabase.client.auth.signOut();
+        sessionStorage.removeItem(this.LAST_SEEN_KEY);
+        this.loading.set(false);
+        this.router.navigate(['/login'], { replaceUrl: true });
+        return;
+      }
+
+      sessionStorage.setItem(this.LAST_SEEN_KEY, Date.now().toString());
       this.currentSession.set(session);
       this.currentUser.set(session.user);
       await this.loadProfile(session.user.id);
     }
+
     this.loading.set(false);
+
+    // Keep last-seen fresh on every navigation while logged in
+    this.router.events
+      .pipe(filter(e => e instanceof NavigationEnd))
+      .subscribe(() => {
+        if (this.isAuthenticated()) {
+          sessionStorage.setItem(this.LAST_SEEN_KEY, Date.now().toString());
+        }
+      });
+
+    // Check inactivity when the user returns to the tab after leaving it
+    document.addEventListener('visibilitychange', async () => {
+      if (document.visibilityState === 'visible' && this.isAuthenticated()) {
+        const lastSeen = sessionStorage.getItem(this.LAST_SEEN_KEY);
+        if (lastSeen && Date.now() - parseInt(lastSeen, 10) > this.INACTIVITY_MS) {
+          await this.signOut();
+        }
+      }
+    });
 
     // Listen to auth state changes
     this.supabase.client.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null) => {
-      // Guard: INITIAL_SESSION with no session while we already have a user means
+      // INITIAL_SESSION with no session while we already have a user means
       // a token refresh is in progress — do not wipe the existing auth state.
       if (event === 'INITIAL_SESSION' && !session && this.currentUser()) {
         return;
@@ -116,11 +152,15 @@ export class AuthService {
   }
 
   async signOut(): Promise<void> {
+    sessionStorage.removeItem(this.LAST_SEEN_KEY);
     await this.supabase.client.auth.signOut();
     this.currentUser.set(null);
     this.currentSession.set(null);
     this.currentProfile.set(null);
-    this.router.navigate(['/login']);
+    // replaceUrl replaces the current history entry so the back button cannot
+    // return to a protected page. The auth guard handles any earlier history
+    // entries with the same replaceUrl strategy.
+    this.router.navigate(['/login'], { replaceUrl: true });
   }
 
   async resetPassword(email: string): Promise<{ success: boolean; error?: string }> {

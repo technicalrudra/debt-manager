@@ -1,16 +1,19 @@
 <div class="container-fluid py-2">
 
- <div class="d-flex justify-content-between mb-3 d-none d-md-flex">
-  <h3>Here's your financial snapshot</h3>
-  <div class="d-flex gap-2">
-    <button mat-stroked-button class="action-btn-outline me-2" (click)="openAddExpense()">
-      <svg lucidePlus [size]="16" [strokeWidth]="2"></svg> Add Expense
-    </button>
-    <button mat-raised-button color="primary" class="action-btn-filled" (click)="openRecordPayment()">
-      <svg lucideScrollText [size]="16" [strokeWidth]="2"></svg> Record Payment
-    </button>
+  <div class="page-header d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 d-none d-md-flex">
+    <div>
+      <h1 class="welcome-text mb-1">Here's your financial snapshot</h1>
+      <p class="text-secondary subtitle mb-0">Monitor your debts and track your financial progress.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <button mat-stroked-button class="action-btn-outline" (click)="openAddExpense()">
+        <svg lucidePlus [size]="16" [strokeWidth]="2"></svg> Add Expense
+      </button>
+      <button mat-flat-button color="primary" class="action-btn-filled" (click)="openRecordPayment()">
+        <svg lucideScrollText [size]="16" [strokeWidth]="2"></svg> Record Payment
+      </button>
+    </div>
   </div>
- </div>
 
   <!-- KPI Grid (compact) -->
   <div class="row g-2 mb-4">

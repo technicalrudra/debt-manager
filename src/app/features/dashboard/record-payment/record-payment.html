@@ -1,107 +1,80 @@
-<div class="payment-modal-container">
+<div class="modal-container">
   <!-- Dialog Header -->
-  <div class="payment-header">
-    <h2 class="dialog-title mb-0">Record a Payment</h2>
-    <button type="button" class="close-btn" (click)="onCancel()" aria-label="Close dialog">
-      <i class="pi pi-times"></i>
+  <div class="modal-header">
+    <h2>Record a Payment</h2>
+    <button type="button" class="modal-close-btn" (click)="onCancel()" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
     </button>
   </div>
 
   <!-- Dialog Body Form -->
-  <div class="payment-content">
-    <p class="dialog-instruction mb-4">
+  <div class="modal-body">
+    <p class="dialog-instruction mb-3">
       Log a payment to reduce your outstanding debt balance and update your progress.
     </p>
 
-    <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="paymentForm" class="d-flex flex-column gap-3">
       <!-- Debt Selection -->
-      <div class="form-group mb-3">
-        <label class="form-label" for="debtName">Select Debt *</label>
-        <p-select 
-          [options]="debtOptions" 
-          formControlName="debtName" 
-          optionLabel="label" 
-          optionValue="value" 
-          placeholder="Choose active debt to pay"
-          class="w-100 custom-p-dropdown"
-          id="debtName">
-        </p-select>
-        <div class="text-danger text-xs mt-1" *ngIf="paymentForm.get('debtName')?.touched && paymentForm.get('debtName')?.errors?.['required']">
-          Please select a debt.
-        </div>
-      </div>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Select Debt</mat-label>
+        <mat-select formControlName="debtName" placeholder="Choose active debt to pay">
+          @for (opt of debtOptions; track opt.value) {
+            <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+          }
+        </mat-select>
+        @if (paymentForm.get('debtName')?.touched && paymentForm.get('debtName')?.errors?.['required']) {
+          <mat-error>Please select a debt.</mat-error>
+        }
+      </mat-form-field>
 
       <!-- Payment Amount & Method -->
-      <div class="row g-3 mb-3">
-        <div class="col-12 col-md-6">
-          <div class="form-group">
-            <label class="form-label" for="amount">Amount (₹) *</label>
-            <input 
-              id="amount"
-              type="number" 
-              pInputText 
-              formControlName="amount" 
-              class="w-100 onboarding-input" 
-              placeholder="e.g. 5000" />
-            
-            <div class="text-danger text-xs mt-1" *ngIf="paymentForm.get('amount')?.touched && paymentForm.get('amount')?.errors?.['required']">
-              Amount is required.
-            </div>
-            <div class="text-danger text-xs mt-1" *ngIf="paymentForm.get('amount')?.touched && paymentForm.get('amount')?.errors?.['min']">
-              Amount must be greater than 0.
-            </div>
-            <div class="text-danger text-xs mt-1" *ngIf="paymentForm.get('amount')?.touched && paymentForm.get('amount')?.errors?.['max']">
-              Cannot exceed remaining debt of ₹{{ getSelectedDebtMaxBalance() | number:'1.0-2' }}.
-            </div>
-          </div>
+      <div class="row g-3">
+        <div class="col-sm-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Amount (₹)</mat-label>
+            <input matInput type="number" formControlName="amount" placeholder="e.g. 5000" />
+            @if (paymentForm.get('amount')?.touched && paymentForm.get('amount')?.errors?.['required']) {
+              <mat-error>Amount is required.</mat-error>
+            } @else if (paymentForm.get('amount')?.touched && paymentForm.get('amount')?.errors?.['min']) {
+              <mat-error>Amount must be greater than 0.</mat-error>
+            } @else if (paymentForm.get('amount')?.touched && paymentForm.get('amount')?.errors?.['max']) {
+              <mat-error>Cannot exceed remaining debt of ₹{{ getSelectedDebtMaxBalance() | number:'1.0-2' }}.</mat-error>
+            }
+          </mat-form-field>
         </div>
-
-        <div class="col-12 col-md-6">
-          <div class="form-group">
-            <label class="form-label" for="method">Payment Method *</label>
-            <p-select 
-              [options]="paymentMethods" 
-              formControlName="method" 
-              optionLabel="label" 
-              optionValue="value" 
-              placeholder="Select Method"
-              class="w-100 custom-p-dropdown"
-              id="method">
-            </p-select>
-          </div>
+        <div class="col-sm-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Payment Method</mat-label>
+            <mat-select formControlName="method">
+              @for (m of paymentMethods; track m.value) {
+                <mat-option [value]="m.value">{{ m.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
         </div>
       </div>
 
       <!-- Date -->
-      <div class="form-group mb-3">
-        <label class="form-label" for="date">Payment Date *</label>
-        <input 
-          id="date"
-          type="date" 
-          pInputText 
-          formControlName="date" 
-          class="w-100 onboarding-input" />
-      </div>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Payment Date</mat-label>
+        <input matInput [matDatepicker]="datePicker" formControlName="date" placeholder="DD/MM/YYYY" />
+        <mat-datepicker-toggle matIconSuffix [for]="datePicker"></mat-datepicker-toggle>
+        <mat-datepicker #datePicker></mat-datepicker>
+      </mat-form-field>
 
       <!-- Notes -->
-      <div class="form-group mb-4">
-        <label class="form-label" for="notes">Notes / Reference (Optional)</label>
-        <input 
-          id="notes"
-          type="text" 
-          pInputText 
-          formControlName="notes" 
-          class="w-100 onboarding-input" 
-          placeholder="e.g. UPI Ref: 12345, Part prepayment" />
-      </div>
-
-      <!-- Dialog Action Buttons -->
-      <div class="d-flex justify-content-end align-items-center pt-3 border-top gap-2" style="border-color: #f1f5f9 !important;">
-        <button type="button" class="back-link-btn" (click)="onCancel()">Cancel</button>
-        <button type="submit" class="nav-btn next-btn" [disabled]="paymentForm.invalid">
-          Record Payment
-        </button>
-      </div>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Notes / Reference (Optional)</mat-label>
+        <input matInput type="text" formControlName="notes" placeholder="e.g. UPI Ref: 12345, Part prepayment" />
+      </mat-form-field>
     </form>
+  </div>
+
+  <!-- Dialog Footer -->
+  <div class="modal-footer">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="paymentForm.invalid">
+      Record Payment
+    </button>
   </div>
 </div>

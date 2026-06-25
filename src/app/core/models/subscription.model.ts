@@ -55,6 +55,7 @@ export interface UserSettings {
   email_reminders: boolean;
   due_date_alerts: boolean;
   dark_mode: boolean;
+  compact_view: boolean;
   language: string;
   timezone: string;
   created_at: string;

@@ -6,6 +6,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { AuthService } from '../../core/services/auth.service';
+import { ThemeService } from '../../core/services/theme.service';
+import { PreferencesService } from '../../core/services/preferences.service';
 
 @Component({
   selector: 'app-header',
@@ -18,6 +20,8 @@ export class Header {
   @Output() toggleSidebar = new EventEmitter<void>();
 
   authService = inject(AuthService);
+  theme = inject(ThemeService);
+  private prefs = inject(PreferencesService);
   private router = inject(Router);
 
   get greeting(): string {
@@ -30,6 +34,20 @@ export class Header {
 
   onToggle() {
     this.toggleSidebar.emit();
+  }
+
+  async toggleDarkMode() {
+    const next = !this.theme.isDark();
+    this.theme.setDark(next);
+    await this.prefs.update({ dark_mode: next });
+  }
+
+  goToProfile() {
+    this.router.navigate(['/profile']);
+  }
+
+  goToSettings() {
+    this.router.navigate(['/settings']);
   }
 
   async logout() {

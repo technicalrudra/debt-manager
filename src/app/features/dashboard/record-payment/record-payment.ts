@@ -2,9 +2,12 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
-import { InputTextModule } from 'primeng/inputtext';
-import { SelectModule } from 'primeng/select';
-import { ButtonModule } from 'primeng/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-record-payment',
@@ -13,9 +16,12 @@ import { ButtonModule } from 'primeng/button';
     CommonModule,
     ReactiveFormsModule,
     MatDialogModule,
-    InputTextModule,
-    SelectModule,
-    ButtonModule
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDatepickerModule,
   ],
   templateUrl: './record-payment.html',
   styleUrls: ['./record-payment.scss']
@@ -54,7 +60,7 @@ export class RecordPayment implements OnInit {
       debtName: ['', Validators.required],
       amount: [null, [Validators.required, Validators.min(1)]],
       method: ['UPI', Validators.required],
-      date: [new Date().toISOString().substring(0, 10), Validators.required],
+      date: [new Date(), Validators.required],
       notes: ['']
     });
 
@@ -84,7 +90,12 @@ export class RecordPayment implements OnInit {
 
   onSubmit() {
     if (this.paymentForm.valid) {
-      this.dialogRef.close(this.paymentForm.value);
+      const value = this.paymentForm.value;
+      const date: Date = value.date;
+      this.dialogRef.close({
+        ...value,
+        date: date instanceof Date ? date.toISOString().substring(0, 10) : value.date
+      });
     }
   }
 

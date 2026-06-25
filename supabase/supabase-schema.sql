@@ -122,6 +122,7 @@ CREATE TABLE IF NOT EXISTS public.user_settings (
   email_reminders BOOLEAN DEFAULT TRUE,
   due_date_alerts BOOLEAN DEFAULT TRUE,
   dark_mode BOOLEAN DEFAULT FALSE,
+  compact_view BOOLEAN DEFAULT FALSE,
   language TEXT DEFAULT 'en',
   timezone TEXT DEFAULT 'Asia/Kolkata',
   created_at TIMESTAMPTZ DEFAULT now(),

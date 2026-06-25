@@ -5,38 +5,222 @@
   </div>
 
   <div class="row g-3">
-    <div class="col-12 col-md-6">
+
+    <!-- ── Appearance ── -->
+    <div class="col-12 col-lg-6">
       <mat-card class="grid-card h-100">
         <mat-card-header>
-          <mat-card-title>Appearance</mat-card-title>
+          <div class="settings-section-icon bg-blue-soft" matCardAvatar>
+            <mat-icon class="text-primary">palette</mat-icon>
+          </div>
+          <mat-card-title class="settings-card-title">Appearance</mat-card-title>
+          <mat-card-subtitle>Customize how the app looks</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content class="pt-3">
-          <div class="d-flex justify-content-between align-items-center">
+          <div class="settings-row">
             <div>
-              <div class="fw-semibold">Dark Mode</div>
-              <div class="text-secondary text-sm">Switch to a dark theme.</div>
+              <div class="settings-label">Dark Mode</div>
+              <div class="text-secondary text-sm">Switch between light and dark theme.</div>
             </div>
-            <mat-slide-toggle></mat-slide-toggle>
+            <mat-slide-toggle
+              color="primary"
+              [checked]="prefs.settings()?.dark_mode ?? theme.isDark()"
+              [disabled]="prefs.loading()"
+              (change)="onDarkMode($event.checked)">
+            </mat-slide-toggle>
+          </div>
+          <mat-divider class="my-3"></mat-divider>
+          <div class="settings-row">
+            <div>
+              <div class="settings-label">Compact View</div>
+              <div class="text-secondary text-sm">Show more content with reduced spacing.</div>
+            </div>
+            <mat-slide-toggle
+              color="primary"
+              [checked]="prefs.settings()?.compact_view ?? theme.isCompact()"
+              [disabled]="prefs.loading()"
+              (change)="onCompactView($event.checked)">
+            </mat-slide-toggle>
           </div>
         </mat-card-content>
       </mat-card>
     </div>
 
-    <div class="col-12 col-md-6">
+    <!-- ── Notifications ── -->
+    <div class="col-12 col-lg-6">
       <mat-card class="grid-card h-100">
         <mat-card-header>
-          <mat-card-title>Notifications</mat-card-title>
+          <div class="settings-section-icon bg-yellow-soft" matCardAvatar>
+            <mat-icon style="color:#d97706">notifications</mat-icon>
+          </div>
+          <mat-card-title class="settings-card-title">Notifications</mat-card-title>
+          <mat-card-subtitle>Control what alerts you receive</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content class="pt-3">
-          <div class="d-flex justify-content-between align-items-center">
+          <div class="settings-row">
             <div>
-              <div class="fw-semibold">Email Reminders</div>
-              <div class="text-secondary text-sm">Get email reminders for upcoming EMIs.</div>
+              <div class="settings-label">EMI Reminders</div>
+              <div class="text-secondary text-sm">Get reminded before upcoming EMI due dates.</div>
             </div>
-            <mat-slide-toggle [checked]="true"></mat-slide-toggle>
+            <mat-slide-toggle
+              color="primary"
+              [checked]="prefs.settings()?.due_date_alerts ?? true"
+              [disabled]="prefs.loading()"
+              (change)="onEmiReminders($event.checked)">
+            </mat-slide-toggle>
+          </div>
+          <mat-divider class="my-3"></mat-divider>
+          <div class="settings-row">
+            <div>
+              <div class="settings-label">Email Alerts</div>
+              <div class="text-secondary text-sm">Receive weekly financial summary via email.</div>
+            </div>
+            <mat-slide-toggle
+              color="primary"
+              [checked]="prefs.settings()?.email_reminders ?? true"
+              [disabled]="prefs.loading()"
+              (change)="onEmailAlerts($event.checked)">
+            </mat-slide-toggle>
+          </div>
+          <mat-divider class="my-3"></mat-divider>
+          <div class="settings-row">
+            <div>
+              <div class="settings-label">Payment Confirmations</div>
+              <div class="text-secondary text-sm">Notify when a payment is successfully recorded.</div>
+            </div>
+            <mat-slide-toggle
+              color="primary"
+              [checked]="prefs.settings()?.notifications_enabled ?? false"
+              [disabled]="prefs.loading()"
+              (change)="onPaymentConfirmations($event.checked)">
+            </mat-slide-toggle>
           </div>
         </mat-card-content>
       </mat-card>
     </div>
+
+    <!-- ── Change Password ── -->
+    <div class="col-12 col-lg-6">
+      <mat-card class="grid-card">
+        <mat-card-header>
+          <div class="settings-section-icon bg-green-soft" matCardAvatar>
+            <mat-icon class="text-success">lock</mat-icon>
+          </div>
+          <mat-card-title class="settings-card-title">Change Password</mat-card-title>
+          <mat-card-subtitle>Update your account password</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="pt-3">
+          <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="d-flex flex-column gap-3">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Current Password</mat-label>
+              <input matInput [type]="showCurrentPw() ? 'text' : 'password'" formControlName="currentPassword" />
+              <button type="button" mat-icon-button matSuffix (click)="showCurrentPw.set(!showCurrentPw())">
+                <mat-icon>{{ showCurrentPw() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              @if (passwordForm.get('currentPassword')?.touched && passwordForm.get('currentPassword')?.errors?.['required']) {
+                <mat-error>Current password is required.</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>New Password</mat-label>
+              <input matInput [type]="showNewPw() ? 'text' : 'password'" formControlName="newPassword" />
+              <button type="button" mat-icon-button matSuffix (click)="showNewPw.set(!showNewPw())">
+                <mat-icon>{{ showNewPw() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              @if (passwordForm.get('newPassword')?.touched && passwordForm.get('newPassword')?.errors?.['required']) {
+                <mat-error>New password is required.</mat-error>
+              }
+              @if (passwordForm.get('newPassword')?.touched && passwordForm.get('newPassword')?.errors?.['minlength']) {
+                <mat-error>Password must be at least 8 characters.</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Confirm New Password</mat-label>
+              <input matInput [type]="showConfirmPw() ? 'text' : 'password'" formControlName="confirmPassword" />
+              <button type="button" mat-icon-button matSuffix (click)="showConfirmPw.set(!showConfirmPw())">
+                <mat-icon>{{ showConfirmPw() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              @if (passwordForm.errors?.['mismatch'] && passwordForm.get('confirmPassword')?.touched) {
+                <mat-error>Passwords do not match.</mat-error>
+              }
+            </mat-form-field>
+
+            <div class="d-flex justify-content-end">
+              <button mat-flat-button color="primary" class="action-btn-filled" type="submit"
+                [disabled]="passwordForm.invalid || savingPassword()">
+                {{ savingPassword() ? 'Saving…' : 'Update Password' }}
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- ── Session & Security ── -->
+    <div class="col-12 col-lg-6">
+      <mat-card class="grid-card h-100">
+        <mat-card-header>
+          <div class="settings-section-icon bg-red-soft" matCardAvatar>
+            <mat-icon style="color:#dc2626">security</mat-icon>
+          </div>
+          <mat-card-title class="settings-card-title">Session & Security</mat-card-title>
+          <mat-card-subtitle>Manage active sessions and auto-logout</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="pt-3">
+          <div class="settings-row">
+            <div>
+              <div class="settings-label">Auto-Logout</div>
+              <div class="text-secondary text-sm">Automatically sign out after 15 minutes of inactivity.</div>
+            </div>
+            <mat-slide-toggle color="primary" [checked]="true" [disabled]="true"></mat-slide-toggle>
+          </div>
+          <mat-divider class="my-3"></mat-divider>
+          <div class="settings-info-row">
+            <mat-icon class="settings-info-icon">info_outline</mat-icon>
+            <span class="text-secondary text-sm">
+              Your session automatically expires after 15 minutes of inactivity to keep your account secure.
+            </span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- ── About ── -->
+    <div class="col-12">
+      <mat-card class="grid-card">
+        <mat-card-header>
+          <div class="settings-section-icon bg-purple-soft" matCardAvatar>
+            <mat-icon style="color:#7c3aed">info</mat-icon>
+          </div>
+          <mat-card-title class="settings-card-title">About</mat-card-title>
+          <mat-card-subtitle>App information and support</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="pt-3">
+          <div class="row g-3">
+            <div class="col-12 col-sm-4">
+              <div class="about-stat">
+                <div class="about-stat-label">Version</div>
+                <div class="about-stat-value">1.0.0</div>
+              </div>
+            </div>
+            <div class="col-12 col-sm-4">
+              <div class="about-stat">
+                <div class="about-stat-label">Build</div>
+                <div class="about-stat-value">2026.06</div>
+              </div>
+            </div>
+            <div class="col-12 col-sm-4">
+              <div class="about-stat">
+                <div class="about-stat-label">Platform</div>
+                <div class="about-stat-value">Web</div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
   </div>
 </div>
